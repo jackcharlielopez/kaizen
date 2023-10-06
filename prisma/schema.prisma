@@ -23,6 +23,7 @@ model Parent {
 
   membership Membership? @relation(fields: [membershipId], references: [id])
   student    Student[]
+  invoice    invoice[]
 }
 
 model Student {
@@ -33,8 +34,9 @@ model Student {
   createdAt DateTime @default(now())
   parentId  String
 
-  parent Parent   @relation(fields: [parentId], references: [id])
-  Report Report[]
+  parent  Parent    @relation(fields: [parentId], references: [id])
+  Report  Report[]
+  invoice invoice[]
 }
 
 model Report {
@@ -42,6 +44,18 @@ model Report {
   studentId String
   content   String
   createdAt DateTime @default(now())
+  completed Boolean
 
   student Student @relation(fields: [studentId], references: [id])
+}
+
+model invoice {
+  studentId String
+  parentId  String
+  cost      Int
+
+  student Student @relation(fields: [studentId], references: [id])
+  parent  Parent  @relation(fields: [parentId], references: [id])
+
+  @@id([parentId, studentId])
 }
