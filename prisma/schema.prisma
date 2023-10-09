@@ -15,8 +15,7 @@ model Membership {
 
 model Parent {
   id           String   @id @default(uuid())
-  firstName    String
-  lastName     String
+  name         String?
   email        String   @unique
   createdAt    DateTime @default(now())
   membershipId String?
@@ -28,8 +27,7 @@ model Parent {
 
 model Student {
   id        String   @id @default(uuid())
-  firstName String
-  lastName  String
+  name      String
   birthDate DateTime @db.Date
   createdAt DateTime @default(now())
   parentId  String

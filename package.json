@@ -24,8 +24,10 @@
     "dayjs": "^1.11.10",
     "embla-carousel-react": "^7.1.0",
     "next": "latest",
+    "next-auth": "^4.23.2",
     "react": "latest",
     "react-dom": "latest",
+    "swr": "^2.2.4",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
