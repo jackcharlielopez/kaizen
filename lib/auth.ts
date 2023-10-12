@@ -31,8 +31,8 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn(res) {
-      console.log(res);
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/portal`;
     },
   },
 };
