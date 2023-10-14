@@ -1,11 +1,26 @@
 "use client";
 
-import { AppShell, Box, Button, Flex, Grid } from "@mantine/core";
+import { AppShell, Box, Button, Grid } from "@mantine/core";
 import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
 
-const name = "Jack";
+// generic layout for users (header, footer, open body)
+// body needs to be driven by account type parent or student
+const handleSignOut = () => {
+  signOut();
+};
 
-const PortalLayout = ({ children }: { children: React.ReactNode }) => {
+const AccountLayout = ({ children }: { children: React.ReactNode }) => {
+  const { data, status } = useSession();
+
+  const handleSignOut = () => {
+    signOut();
+  };
+
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
   return (
     <AppShell padding="md">
       <AppShell.Header bg="blue" p={8} c="white">
@@ -21,7 +36,8 @@ const PortalLayout = ({ children }: { children: React.ReactNode }) => {
           </Grid.Col>
           <Grid.Col span="content">
             <Box>
-              Welcome {name} <Button>Logout</Button>
+              Welcome {data?.user?.name}
+              <Button onClick={handleSignOut}>Logout</Button>
             </Box>
           </Grid.Col>
         </Grid>
@@ -32,4 +48,4 @@ const PortalLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default PortalLayout;
+export default AccountLayout;
