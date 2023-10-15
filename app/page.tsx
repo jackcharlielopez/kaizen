@@ -3,17 +3,13 @@
 import {
   BackgroundImage,
   Button,
-  Group,
   Stack,
   Text,
   Overlay,
+  Group,
 } from "@mantine/core";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
-
-const signup = () => {
-  console.log("clicked sign up");
-};
 
 export default function Home() {
   return (
@@ -21,17 +17,8 @@ export default function Home() {
       <Overlay color="#000" backgroundOpacity={0.5} zIndex={0} />
 
       <Group justify="flex-end" p={8} h={50}>
-        <Button
-          component={Link}
-          href="/api/auth/signin"
-          variant="outline"
-          color="white"
-        >
+        <Button variant="filled" onClick={() => signIn()}>
           Sign In
-        </Button>
-
-        <Button variant="filled" onClick={signup}>
-          Sign Up
         </Button>
       </Group>
 
@@ -48,7 +35,7 @@ export default function Home() {
           A personalized tutor for your child, through the power of AI
         </Text>
 
-        <Button variant="filled" onClick={signup}>
+        <Button variant="filled" onClick={() => signIn()}>
           Try Risk Free 7 Day Trial
         </Button>
       </Stack>

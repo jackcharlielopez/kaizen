@@ -6,20 +6,8 @@ import { signOut, useSession } from "next-auth/react";
 
 // generic layout for users (header, footer, open body)
 // body needs to be driven by account type parent or student
-const handleSignOut = () => {
-  signOut();
-};
-
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
-  const { data, status } = useSession();
-
-  const handleSignOut = () => {
-    signOut();
-  };
-
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
+  const { data: session } = useSession();
 
   return (
     <AppShell padding="md">
@@ -36,8 +24,8 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
           </Grid.Col>
           <Grid.Col span="content">
             <Box>
-              Welcome {data?.user?.name}
-              <Button onClick={handleSignOut}>Logout</Button>
+              Welcome {session?.user?.name}
+              <Button onClick={() => signOut()}>Logout</Button>
             </Box>
           </Grid.Col>
         </Grid>

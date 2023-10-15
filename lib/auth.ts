@@ -1,10 +1,7 @@
 import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import InstagramProvider from "next-auth/providers/instagram";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "../lib/prisma";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
@@ -16,7 +13,9 @@ const INSTAGRAM_CLIENT_ID = process.env.INSTAGRAM_CLIENT_ID;
 const INSTAGRAM_CLIENT_SECRET = process.env.INSTAGRAM_CLIENT_SECRET;
 
 const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     GoogleProvider({
       clientId: GOOGLE_CLIENT_ID as string,
@@ -31,11 +30,6 @@ const authOptions: NextAuthOptions = {
       clientSecret: INSTAGRAM_CLIENT_SECRET,
     }),
   ],
-  callbacks: {
-    async redirect({ baseUrl }) {
-      return `${baseUrl}/accounts`;
-    },
-  },
 };
 
 export default authOptions;
