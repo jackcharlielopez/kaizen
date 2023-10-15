@@ -30,6 +30,11 @@ const authOptions: NextAuthOptions = {
       clientSecret: INSTAGRAM_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/accounts`;
+    },
+  },
 };
 
 export default authOptions;
