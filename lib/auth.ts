@@ -34,6 +34,18 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    session: async ({ session, token }) => {
+      if (session?.user) {
+        session.user.id = token.uid;
+      }
+      return session;
+    },
+    jwt: async ({ user, token }) => {
+      if (user) {
+        token.uid = user.id;
+      }
+      return token;
+    },
     redirect: async ({ baseUrl }) => {
       return `${baseUrl}/accounts`;
     },

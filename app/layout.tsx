@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
-import Providers from "./components/Providers";
+import Session_Provider from "./_components/Session_Provider";
+import TrpcProvider from "./_trpc/TrpcProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={inter.className}>
-        <Providers>
-          <MantineProvider>{children}</MantineProvider>
-        </Providers>
+        <Session_Provider>
+          <TrpcProvider>
+            <MantineProvider>{children}</MantineProvider>
+          </TrpcProvider>
+        </Session_Provider>
       </body>
     </html>
   );
