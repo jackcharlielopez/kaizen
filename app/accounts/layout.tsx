@@ -1,22 +1,22 @@
 "use client";
 
 import {
-  AppShell,
   Avatar,
   Box,
   Button,
-  Grid,
+  Container,
+  Flex,
   Group,
   Modal,
+  Stack,
 } from "@mantine/core";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../_trpc/client";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
-import { Student } from "@prisma/client";
+import { createContext, useState } from "react";
 
-interface userProps {
+export interface userProps {
   role: string;
   name: string;
   id: string;
@@ -26,6 +26,8 @@ const getInitials = (name: string) => {
   const splitName = name.split(" ");
   return splitName[0].charAt(0).concat(splitName[1].charAt(0));
 };
+
+export const AccountContext = createContext<userProps | undefined>(undefined);
 
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
   const { data } = trpc.getStudents.useQuery();
@@ -52,36 +54,32 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (props && status === "authenticated" && !opened) {
     return (
-      <AppShell padding="md">
-        <AppShell.Header bg="blue" p={8} c="white">
-          <Grid justify="space-between" align="center">
-            <Grid.Col span="content">
-              <Image
-                src="/logo.svg"
-                width={0}
-                height={0}
-                style={{ width: "auto", height: "48px" }}
-                alt="Kaizen Logo"
-              />
-            </Grid.Col>
-            <Grid.Col span="content">
-              <Group justify="center" gap="xs">
-                Welcome {props.name}
-                <Avatar
-                  variant="filled"
-                  radius="lg"
-                  size="sm"
-                  component="button"
-                  onClick={() => handlers.open()}
-                ></Avatar>
-                <Button onClick={() => signOut()}>Logout</Button>
-              </Group>
-            </Grid.Col>
-          </Grid>
-        </AppShell.Header>
+      <Stack h={"100vh"} bg={"blue"}>
+        <Group justify="space-between" p={8}>
+          <Image
+            src="/logo.svg"
+            width={0}
+            height={0}
+            style={{ width: "auto", height: "48px" }}
+            alt="Kaizen Logo"
+          />
+          <Group justify="center" gap="xs">
+            Welcome {props.name}
+            <Avatar
+              variant="filled"
+              radius="lg"
+              size="sm"
+              component="button"
+              onClick={() => handlers.open()}
+            ></Avatar>
+            <Button onClick={() => signOut()}>Logout</Button>
+          </Group>
+        </Group>
 
-        <AppShell.Main>{children}</AppShell.Main>
-      </AppShell>
+        <AccountContext.Provider value={{ ...props }}>
+          {children}
+        </AccountContext.Provider>
+      </Stack>
     );
   }
 
@@ -94,7 +92,14 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
       radius={0}
       transitionProps={{ transition: "fade", duration: 200 }}
     >
-      <Group justify="center" gap="xl">
+      <Flex
+        h={"calc(100vh - 32px"}
+        gap="sm"
+        justify="center"
+        align="center"
+        direction="row"
+        wrap="wrap"
+      >
         <Avatar
           variant="filled"
           radius="sm"
@@ -116,7 +121,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
             {getInitials(item.name)}
           </Avatar>
         ))}
-      </Group>
+      </Flex>
     </Modal>
   );
 };

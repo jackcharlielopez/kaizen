@@ -1,9 +1,16 @@
 "use client";
 
-import { Box } from "@mantine/core";
+import { useContext } from "react";
+import { AccountContext } from "./layout";
+import Parent from "../_components/Parent";
+import Student from "../_components/Student";
 
-const userAccount = () => {
-  return <Box>If parent show parent, if student show student</Box>;
+const UserAccount = () => {
+  let { role } = useContext(AccountContext);
+
+  if (role === "parent") return <Parent></Parent>;
+
+  return <Student></Student>;
 };
 
-export default userAccount;
+export default UserAccount;
