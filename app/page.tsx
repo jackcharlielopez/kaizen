@@ -1,5 +1,3 @@
-"use client";
-
 import {
   BackgroundImage,
   Button,
@@ -8,10 +6,16 @@ import {
   Overlay,
   Group,
 } from "@mantine/core";
+import { getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession();
+
+  if (session) redirect("/accounts");
+
   return (
     <BackgroundImage src="/splash-page-background.png" h="100vh">
       <Overlay color="#000" backgroundOpacity={0.5} zIndex={0} />

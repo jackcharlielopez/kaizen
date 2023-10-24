@@ -15,11 +15,13 @@ import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../_trpc/client";
 import { useDisclosure } from "@mantine/hooks";
 import { createContext, useState } from "react";
+import { Student } from "@prisma/client";
 
 export interface userProps {
   role: string;
   name: string;
   id: string;
+  students?: Student[];
 }
 
 const getInitials = (name: string) => {
@@ -44,6 +46,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         role: "parent",
         name: session?.user.name,
         id: session?.user.id,
+        students: data || [],
       });
     }
 

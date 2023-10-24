@@ -6,7 +6,7 @@ import Parent from "../_components/Parent";
 import Student from "../_components/Student";
 
 const UserAccount = () => {
-  let { role } = useContext(AccountContext);
+  const { role } = useContext(AccountContext);
 
   if (role === "parent") return <Parent></Parent>;
 
