@@ -13,12 +13,17 @@ export enum TimerStatus {
   start,
   stop,
   finished,
+  disabled,
 }
 
-export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
-  const [timerStatus, setTimerStatus] = useState<TimerStatus>(
-    TimerStatus.start
-  );
+export const Timer = ({
+  lengthOfTime,
+  status,
+}: {
+  lengthOfTime: number;
+  status: TimerStatus;
+}) => {
+  const [timerStatus, setTimerStatus] = useState<TimerStatus>(status);
   const [timer, setTimer] = useState(lengthOfTime);
 
   // get timer to count down
@@ -38,12 +43,20 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
   }, [timer, timerStatus]);
   // get timer to count down
 
+  const convertStoMs = () => {
+    let minutes = Math.floor(timer / 60);
+    let extraSeconds =
+      (timer % 60).toString().length == 1 ? "0" + (timer % 60) : timer % 60;
+
+    return minutes + ":" + extraSeconds;
+  };
+
   const getLabel = () => {
     switch (timerStatus) {
       case TimerStatus.start:
         return (
           <Text c="blue" fw={700} ta="center" size="xl">
-            {timer}
+            {convertStoMs()}
           </Text>
         );
       case TimerStatus.stop:
@@ -75,13 +88,28 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
     }
   };
 
+  if (timerStatus !== TimerStatus.disabled) {
+    return (
+      <RingProgress
+        onClick={toggleTimer}
+        size={200}
+        thickness={25}
+        sections={[{ value: (timer / lengthOfTime) * 100, color: "blue" }]}
+        label={getLabel()}
+      />
+    );
+  }
+
   return (
     <RingProgress
-      onClick={toggleTimer}
       size={200}
       thickness={25}
-      sections={[{ value: (timer / lengthOfTime) * 100, color: "blue" }]}
-      label={getLabel()}
+      sections={[{ value: 100, color: "grey" }]}
+      label={
+        <Text c="grey" fw={700} ta="center" size="xl">
+          {convertStoMs()}
+        </Text>
+      }
     />
   );
 };
