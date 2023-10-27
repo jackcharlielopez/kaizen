@@ -1,24 +1,47 @@
-import { Box, Flex, Group, Paper, Stack, Text } from "@mantine/core";
+import { Button, Flex, Group, Paper, Stack, Text } from "@mantine/core";
 import { useContext, useState } from "react";
 import { AccountContext } from "../accounts/layout";
 import { Timer, TimerStatus } from "./Timer";
 import { trpc } from "../_trpc/client";
+import { PromptNextQuestion } from "./prompts";
 
+enum LearningStatus {
+  "start",
+  "stop",
+  "finished",
+}
 const Student = () => {
-  let message = {
-    role: "user",
-    content:
-      'You are a tutor for an elementary school. Provide a math question to test my ability. Make sure each math question is formatted as "x + y = z"',
-  };
-  let messages = [];
-
-  messages.push(message);
-
   let { id } = useContext(AccountContext);
   const [timerStat, setTimerStat] = useState(TimerStatus.disabled);
-  const { data } = trpc.setOpenAiMessage.useQuery(messages);
+  const [status, setStatus] = useState(LearningStatus.stop);
+  const { data } = trpc.setOpenAiMessage.useQuery(PromptNextQuestion, {
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 1440,
+  });
 
-  console.log(data);
+  const startAssessment = () => {
+    setStatus(LearningStatus.start);
+    setTimerStat(TimerStatus.start);
+  };
+
+  const Content = () => {
+    switch (status) {
+      case LearningStatus.start:
+        return <Text size={"120px"}>{data?.response}</Text>;
+      case LearningStatus.finished:
+        return (
+          <Text size={"xl"}>Great job today. Come back again tomorrow</Text>
+        );
+      default:
+        return (
+          <>
+            <Text size={"xl"}>Welcome let's start our practice for today!</Text>
+            <Button onClick={() => startAssessment()}>Start Assessment</Button>
+          </>
+        );
+    }
+  };
 
   return (
     <Stack justify="flex-start" gap={0}>
@@ -27,7 +50,9 @@ const Student = () => {
       </Group>
       <Group justify="center" h={500}>
         <Paper w={"60%"} shadow="md" withBorder p="xl" h={"70%"}>
-          <Text>flash card</Text>
+          <Flex justify="center" align="center" h={"100%"}>
+            <Content />
+          </Flex>
         </Paper>
       </Group>
     </Stack>

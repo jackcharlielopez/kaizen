@@ -29,7 +29,7 @@ export const appRouter = router({
       z.array(
         z.object({
           role: z.string(),
-          content: z.string(),
+          content: z.string().nullable(),
         })
       )
     )

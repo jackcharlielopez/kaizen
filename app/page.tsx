@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BackgroundImage,
   Button,
@@ -7,14 +9,14 @@ import {
   Group,
 } from "@mantine/core";
 import { getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
-  const session = await getServerSession();
+export default function Home() {
+  const { data: session } = useSession();
 
-  if (session) redirect("/accounts");
+  console.log(session);
 
   return (
     <BackgroundImage src="/splash-page-background.png" h="100vh">

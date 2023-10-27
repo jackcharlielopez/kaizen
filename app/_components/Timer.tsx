@@ -26,6 +26,10 @@ export const Timer = ({
   const [timerStatus, setTimerStatus] = useState<TimerStatus>(status);
   const [timer, setTimer] = useState(lengthOfTime);
 
+  useEffect(() => {
+    setTimerStatus(status);
+  }, [status]);
+
   // get timer to count down
   useEffect(() => {
     if (timerStatus !== TimerStatus.start) return;
@@ -55,7 +59,7 @@ export const Timer = ({
     switch (timerStatus) {
       case TimerStatus.start:
         return (
-          <Text c="blue" fw={700} ta="center" size="xl">
+          <Text c="green" fw={700} ta="center" size="xl">
             {convertStoMs()}
           </Text>
         );
@@ -91,10 +95,10 @@ export const Timer = ({
   if (timerStatus !== TimerStatus.disabled) {
     return (
       <RingProgress
-        onClick={toggleTimer}
+        onClick={() => toggleTimer()}
         size={200}
         thickness={25}
-        sections={[{ value: (timer / lengthOfTime) * 100, color: "blue" }]}
+        sections={[{ value: (timer / lengthOfTime) * 100, color: "green" }]}
         label={getLabel()}
       />
     );
