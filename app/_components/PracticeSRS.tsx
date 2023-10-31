@@ -58,8 +58,6 @@ export const PracticeSRS = () => {
     } else {
       setCounter(counter + 1);
     }
-
-    console.log(sRSObj);
   };
 
   const solve = (mathProblem: OOOValues) => {
