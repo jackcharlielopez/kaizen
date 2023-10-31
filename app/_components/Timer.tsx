@@ -12,7 +12,7 @@ import { StudentSessionStatus } from "./Student";
 import {
   StudentSessionStatusContext,
   StudentSessionStatusEnum,
-} from "@/@types/userStates";
+} from "@/@types/user-status.model";
 
 export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
   const { studentSessionStatus, setStudentSessionStatus } =

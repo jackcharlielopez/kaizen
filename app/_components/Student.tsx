@@ -6,8 +6,9 @@ import { trpc } from "../_trpc/client";
 import {
   StudentSessionStatusContext,
   StudentSessionStatusEnum,
-} from "@/@types/userStates";
+} from "@/@types/user-status.model";
 import React from "react";
+import { PracticeSRS } from "./PracticeSRS";
 
 export const StudentSessionStatus =
   createContext<StudentSessionStatusContext | null>(null);
@@ -23,7 +24,7 @@ const Student = () => {
   const GetContent = () => {
     switch (studentSessionStatus) {
       case StudentSessionStatusEnum.start:
-        return <Text size={"120px"}>{promptResponse?.content}</Text>;
+        return PracticeSRS();
       case StudentSessionStatusEnum.stop:
         return <Text size={"120px"}>{promptResponse?.content}</Text>;
       case StudentSessionStatusEnum.finished:
@@ -54,7 +55,7 @@ const Student = () => {
     >
       <Stack justify="flex-start" gap={0}>
         <Group justify="flex-end">
-          <Timer lengthOfTime={20}></Timer>
+          <Timer lengthOfTime={200}></Timer>
         </Group>
         <Group justify="center" h={500}>
           <Paper w={"60%"} shadow="md" withBorder p="xl" h={"70%"}>

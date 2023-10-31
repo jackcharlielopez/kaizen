@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { protectedProcedure, publicProcedure, router } from "./trpc";
+import { protectedProcedure, router } from "./trpc";
 import { z } from "zod";
 import openai from "@/lib/openai";
 import { ChatCompletionMessage } from "openai/resources/chat/index.mjs";
-import { LearningPrompt } from "@/app/_components/Prompts";
+import { LearningPrompt } from "@/lib/Prompts";
 
 export const appRouter = router({
   getStudents: protectedProcedure
