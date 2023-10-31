@@ -7,35 +7,21 @@ import {
   rem,
 } from "@mantine/core";
 import { IconCheck, IconPlayerPause } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { StudentSessionStatus } from "./Student";
+import { StudentSessionStatusEnum } from "@/@types/userStates";
 
-export enum TimerStatus {
-  start,
-  stop,
-  finished,
-  disabled,
-}
-
-export const Timer = ({
-  lengthOfTime,
-  status,
-}: {
-  lengthOfTime: number;
-  status: TimerStatus;
-}) => {
-  const [timerStatus, setTimerStatus] = useState<TimerStatus>(status);
+export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
+  const { studentSessionStatus, setStudentSessionStatus } =
+    useContext(StudentSessionStatus);
   const [timer, setTimer] = useState(lengthOfTime);
-
-  useEffect(() => {
-    setTimerStatus(status);
-  }, [status]);
 
   // get timer to count down
   useEffect(() => {
-    if (timerStatus !== TimerStatus.start) return;
+    if (studentSessionStatus !== StudentSessionStatusEnum.start) return;
 
     if (timer === 0) {
-      setTimerStatus(TimerStatus.finished);
+      setStudentSessionStatus(StudentSessionStatusEnum.finished);
       return;
     }
 
@@ -44,7 +30,7 @@ export const Timer = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timer, timerStatus]);
+  }, [timer, studentSessionStatus, setStudentSessionStatus]);
   // get timer to count down
 
   const convertStoMs = () => {
@@ -55,65 +41,80 @@ export const Timer = ({
     return minutes + ":" + extraSeconds;
   };
 
-  const getLabel = () => {
-    switch (timerStatus) {
-      case TimerStatus.start:
-        return (
-          <Text c="green" fw={700} ta="center" size="xl">
-            {convertStoMs()}
-          </Text>
-        );
-      case TimerStatus.stop:
-        return (
-          <Center>
-            <ActionIcon color="teal" variant="light" radius="xl" size="xl">
-              <IconPlayerPause style={{ width: rem(22), height: rem(22) }} />
-            </ActionIcon>
-          </Center>
-        );
-      case TimerStatus.finished:
-        return (
-          <Center>
-            <ActionIcon color="teal" variant="light" radius="xl" size="xl">
-              <IconCheck style={{ width: rem(22), height: rem(22) }} />
-            </ActionIcon>
-          </Center>
-        );
-    }
-  };
-
   const toggleTimer = () => {
-    if (timerStatus === TimerStatus.finished) return;
+    if (studentSessionStatus === StudentSessionStatusEnum.finished) return;
 
-    if (timerStatus === TimerStatus.start) {
-      setTimerStatus(TimerStatus.stop);
+    if (studentSessionStatus === StudentSessionStatusEnum.start) {
+      setStudentSessionStatus(StudentSessionStatusEnum.stop);
     } else {
-      setTimerStatus(TimerStatus.start);
+      setStudentSessionStatus(StudentSessionStatusEnum.start);
     }
   };
 
-  if (timerStatus !== TimerStatus.disabled) {
-    return (
-      <RingProgress
-        onClick={() => toggleTimer()}
-        size={200}
-        thickness={25}
-        sections={[{ value: (timer / lengthOfTime) * 100, color: "green" }]}
-        label={getLabel()}
-      />
-    );
-  }
+  const Body = () => {
+    switch (studentSessionStatus) {
+      case StudentSessionStatusEnum.start:
+        return (
+          <RingProgress
+            onClick={() => toggleTimer()}
+            size={200}
+            thickness={25}
+            sections={[{ value: (timer / lengthOfTime) * 100, color: "green" }]}
+            label={
+              <Text c="green" fw={700} ta="center" size="xl">
+                {convertStoMs()}
+              </Text>
+            }
+          />
+        );
+      case StudentSessionStatusEnum.stop:
+        return (
+          <RingProgress
+            onClick={() => toggleTimer()}
+            size={200}
+            thickness={25}
+            sections={[{ value: (timer / lengthOfTime) * 100, color: "grey" }]}
+            label={
+              <Center>
+                <ActionIcon color="grey" variant="light" radius="xl" size="xl">
+                  <IconPlayerPause
+                    style={{ width: rem(22), height: rem(22) }}
+                  />
+                </ActionIcon>
+              </Center>
+            }
+          />
+        );
+      case StudentSessionStatusEnum.finished:
+        return (
+          <RingProgress
+            size={200}
+            thickness={25}
+            sections={[{ value: 100, color: "red" }]}
+            label={
+              <Center>
+                <ActionIcon color="red" variant="light" radius="xl" size="xl">
+                  <IconCheck style={{ width: rem(22), height: rem(22) }} />
+                </ActionIcon>
+              </Center>
+            }
+          />
+        );
+      default:
+        return (
+          <RingProgress
+            size={200}
+            thickness={25}
+            sections={[{ value: 100, color: "grey" }]}
+            label={
+              <Text c="grey" fw={700} ta="center" size="xl">
+                {convertStoMs()}
+              </Text>
+            }
+          />
+        );
+    }
+  };
 
-  return (
-    <RingProgress
-      size={200}
-      thickness={25}
-      sections={[{ value: 100, color: "grey" }]}
-      label={
-        <Text c="grey" fw={700} ta="center" size="xl">
-          {convertStoMs()}
-        </Text>
-      }
-    />
-  );
+  return <Body />;
 };

@@ -1,61 +1,80 @@
 import { Button, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { useContext, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
 import { AccountContext } from "../accounts/layout";
-import { Timer, TimerStatus } from "./Timer";
+import { Timer } from "./Timer";
 import { trpc } from "../_trpc/client";
-import { PromptNextQuestion } from "./prompts";
+import { StudentSessionStatusEnum } from "@/@types/userStates";
+import React from "react";
 
-enum LearningStatus {
-  "start",
-  "stop",
-  "finished",
-}
+export type StudentSessionStatusContext = {
+  studentSessionStatus: StudentSessionStatusEnum;
+  setStudentSessionStatus: Dispatch<SetStateAction<StudentSessionStatusEnum>>;
+};
+
+export const StudentSessionStatus =
+  createContext<StudentSessionStatusContext | null>(null);
+
 const Student = () => {
-  let { id } = useContext(AccountContext);
-  const [timerStat, setTimerStat] = useState(TimerStatus.disabled);
-  const [status, setStatus] = useState(LearningStatus.stop);
-  const { data } = trpc.setOpenAiMessage.useQuery(PromptNextQuestion, {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    staleTime: 1440,
-  });
+  let { id, name } = useContext(AccountContext);
+  const [studentSessionStatus, setStudentSessionStatus] = useState(
+    StudentSessionStatusEnum.default
+  );
+  const { data: promptResponse, mutate: promptRequest } =
+    trpc.setOpenAiMessage.useMutation();
 
-  const startAssessment = () => {
-    setStatus(LearningStatus.start);
-    setTimerStat(TimerStatus.start);
-  };
-
-  const Content = () => {
-    switch (status) {
-      case LearningStatus.start:
-        return <Text size={"120px"}>{data?.response}</Text>;
-      case LearningStatus.finished:
+  const GetContent = () => {
+    switch (studentSessionStatus) {
+      case StudentSessionStatusEnum.start:
+        return <Text size={"120px"}>{promptResponse?.content}</Text>;
+      case StudentSessionStatusEnum.stop:
+        return <Text size={"120px"}>{promptResponse?.content}</Text>;
+      case StudentSessionStatusEnum.finished:
         return (
-          <Text size={"xl"}>Great job today. Come back again tomorrow</Text>
+          <Text size={"xl"}>
+            That's all we have for today. Great job! You got x/y correct
+          </Text>
         );
       default:
         return (
           <>
-            <Text size={"xl"}>Welcome let's start our practice for today!</Text>
+            <Text size={"xl"}>
+              Welcome back {name}. Lets get started on learning!
+            </Text>
             <Button onClick={() => startAssessment()}>Start Assessment</Button>
           </>
         );
     }
   };
 
+  const startAssessment = () => {
+    setStudentSessionStatus(StudentSessionStatusEnum.start);
+  };
+
   return (
-    <Stack justify="flex-start" gap={0}>
-      <Group justify="flex-end">
-        <Timer lengthOfTime={1200} status={timerStat}></Timer>
-      </Group>
-      <Group justify="center" h={500}>
-        <Paper w={"60%"} shadow="md" withBorder p="xl" h={"70%"}>
-          <Flex justify="center" align="center" h={"100%"}>
-            <Content />
-          </Flex>
-        </Paper>
-      </Group>
-    </Stack>
+    <StudentSessionStatus.Provider
+      value={{ studentSessionStatus, setStudentSessionStatus }}
+    >
+      <Stack justify="flex-start" gap={0}>
+        <Group justify="flex-end">
+          <Timer lengthOfTime={20}></Timer>
+        </Group>
+        <Group justify="center" h={500}>
+          <Paper w={"60%"} shadow="md" withBorder p="xl" h={"70%"}>
+            <Flex justify="center" align="center" h={"100%"}>
+              <Stack align="center">
+                <GetContent />
+              </Stack>
+            </Flex>
+          </Paper>
+        </Group>
+      </Stack>
+    </StudentSessionStatus.Provider>
   );
 };
 
