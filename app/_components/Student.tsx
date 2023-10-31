@@ -1,21 +1,13 @@
 import { Button, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 import { AccountContext } from "../accounts/layout";
 import { Timer } from "./Timer";
 import { trpc } from "../_trpc/client";
-import { StudentSessionStatusEnum } from "@/@types/userStates";
+import {
+  StudentSessionStatusContext,
+  StudentSessionStatusEnum,
+} from "@/@types/userStates";
 import React from "react";
-
-export type StudentSessionStatusContext = {
-  studentSessionStatus: StudentSessionStatusEnum;
-  setStudentSessionStatus: Dispatch<SetStateAction<StudentSessionStatusEnum>>;
-};
 
 export const StudentSessionStatus =
   createContext<StudentSessionStatusContext | null>(null);

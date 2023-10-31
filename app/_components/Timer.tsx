@@ -9,11 +9,14 @@ import {
 import { IconCheck, IconPlayerPause } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import { StudentSessionStatus } from "./Student";
-import { StudentSessionStatusEnum } from "@/@types/userStates";
+import {
+  StudentSessionStatusContext,
+  StudentSessionStatusEnum,
+} from "@/@types/userStates";
 
 export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
   const { studentSessionStatus, setStudentSessionStatus } =
-    useContext(StudentSessionStatus);
+    useContext<StudentSessionStatusContext | null>(StudentSessionStatus);
   const [timer, setTimer] = useState(lengthOfTime);
 
   // get timer to count down
@@ -92,11 +95,9 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
             thickness={25}
             sections={[{ value: 100, color: "red" }]}
             label={
-              <Center>
-                <ActionIcon color="red" variant="light" radius="xl" size="xl">
-                  <IconCheck style={{ width: rem(22), height: rem(22) }} />
-                </ActionIcon>
-              </Center>
+              <Text c="red" fw={700} ta="center" size="xl">
+                Time's Up!
+              </Text>
             }
           />
         );
