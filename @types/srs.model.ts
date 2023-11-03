@@ -43,7 +43,6 @@ export const generateLearningSet = (
   currentSection: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
-
   for (let x = 1; x <= 9; x++) {
     learningSet.push({
       problem: currentSection + " " + operation + " " + x,
@@ -52,4 +51,15 @@ export const generateLearningSet = (
   }
 
   return learningSet;
+};
+
+export const shuffleArr = (generatedLearningSet: OOOValues[]) => {
+  for (let i = generatedLearningSet.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [generatedLearningSet[i], generatedLearningSet[j]] = [
+      generatedLearningSet[j],
+      generatedLearningSet[i],
+    ];
+  }
+  return generatedLearningSet;
 };

@@ -1,111 +1,177 @@
-// todo: first make call for student report
-// generate first report
-// when timer is done
-import { useForm } from "@mantine/form";
 import {
-  OOOEnum,
-  OOOValues,
-  SRSModel,
   defaultSRSObj,
   generateLearningSet,
+  shuffleArr,
 } from "@/@types/srs.model";
-import { Button, Center, Input, Text } from "@mantine/core";
-import { useState } from "react";
+import { Button, Center, Group, List, Stack, Text } from "@mantine/core";
+import { useContext, useEffect, useMemo, useState } from "react";
+import {
+  StudentPreviousReportContext,
+  StudentSessionStatusContext,
+  StudentSessionStatusEnum,
+} from "@/@types/user-status.model";
+import { StudentPreviousReport, StudentSessionStatus } from "./Student";
+import { QuestionAnswer } from "./QuestionAnswer";
 
+enum UserActionsEnum {
+  "test",
+  "help",
+  "practice",
+  "review",
+}
 export const PracticeSRS = () => {
-  // short hand getting for answer input
-  const answer = () => {
-    return form.getInputProps("answer");
-  };
-
-  // form to manage user answer
-  const form = useForm({
-    initialValues: {
-      answer: "",
-    },
-  });
-
-  const [counter, setCounter] = useState(0);
-
-  // TODO pull in the user has a previous report otherwise use default
-  const [sRSObj, setSRSObj] = useState(defaultSRSObj);
+  const { studentPreviousReport, setStudentPreviousReport } =
+    useContext<StudentPreviousReportContext | null>(StudentPreviousReport);
+  const { studentSessionStatus, setStudentSessionStatus } =
+    useContext<StudentSessionStatusContext | null>(StudentSessionStatus);
 
   const generatedLearningSet = generateLearningSet(
-    sRSObj.OOO,
-    sRSObj.currentSection
+    studentPreviousReport.OOO,
+    studentPreviousReport.currentSection
   );
-  const [learningSet, setLearningSet] = useState(generatedLearningSet);
 
-  const checkSet = () => {
-    if (counter === learningSet.length - 1) {
-      // prepare to test or review wrong
-      if (sRSObj.wrong.length) {
-        // move the items in wrong to the learning stack
-        setLearningSet(sRSObj.wrong);
-        // check if user has gone through their 3rd iteration and set testing to true
-        sRSObj.iterations < 3
-          ? setSRSObj({ ...sRSObj, iterations: sRSObj.iterations++ })
-          : setSRSObj({
-              ...sRSObj,
-              iterations: sRSObj.iterations++,
-              testing: true,
-            });
-      } else {
-        // The user is ready to be tested
-        setSRSObj({ ...sRSObj, testing: true });
-      }
+  const [learningSet, setLearningSet] = useState(generatedLearningSet);
+  const [counter, setCounter] = useState(0);
+  const [userActions, setUserActions] = useState(UserActionsEnum.review);
+
+  useEffect(() => {
+    if (counter < learningSet.length) {
+      return;
+    }
+
+    if (studentPreviousReport.iterations === 2) {
+      setUserActions(UserActionsEnum.test);
+      return;
+    }
+
+    if (counter === learningSet.length && studentPreviousReport.test) {
+      setUserActions(UserActionsEnum.test);
+      return;
+    }
+
+    if (counter === learningSet.length && studentPreviousReport.wrong.length) {
+      // move learning set to be whatever user got wrong
+      setLearningSet(studentPreviousReport.wrong);
+      // clear out the wrong category and update iteration
+      setStudentPreviousReport({
+        ...studentPreviousReport,
+        iterations: studentPreviousReport.iterations + 1,
+        right: [],
+        wrong: [],
+      });
+      // restart counter
       setCounter(0);
     } else {
-      setCounter(counter + 1);
+      setUserActions(UserActionsEnum.test);
+    }
+  }, [
+    counter,
+    learningSet,
+    setStudentPreviousReport,
+    setStudentSessionStatus,
+    studentPreviousReport,
+  ]);
+
+  const Body = () => {
+    switch (userActions) {
+      case UserActionsEnum.help:
+        return <Text>Your AI will help</Text>;
+      case UserActionsEnum.practice:
+        return (
+          <Center>
+            <QuestionAnswer
+              qandA={learningSet[counter]}
+              counter={counter}
+              setCounter={setCounter}
+            ></QuestionAnswer>
+          </Center>
+        );
+      case UserActionsEnum.test:
+        if (studentPreviousReport.test) {
+          return (
+            <Group justify="center">
+              <Text>
+                Your results were:{studentPreviousReport.right.length} /{" "}
+                {learningSet.length}{" "}
+              </Text>
+              {studentPreviousReport.wrong.length ? (
+                <Button onClick={keepPracticing}>Keep Practicing</Button>
+              ) : (
+                <Button onClick={nextLesson}>
+                  Next Lesson ({studentPreviousReport.currentSection + 1}'s)
+                </Button>
+              )}
+            </Group>
+          );
+        } else {
+          return (
+            <Group justify="center">
+              <Text>
+                We've done a lot of practicing, I think you are ready for the
+                quiz. If not lets practice some more.
+              </Text>
+              <Button onClick={startQuiz}>Start Quiz</Button>
+              {studentPreviousReport.wrong.length && (
+                <Button onClick={keepPracticing}>Keep Practicing</Button>
+              )}
+            </Group>
+          );
+        }
+      default:
+        return (
+          <Stack align="center">
+            <List>
+              <List.Item>List of lessons points</List.Item>
+            </List>
+            <Button onClick={startPracticing}>Start Practice</Button>
+          </Stack>
+        );
     }
   };
 
-  const solve = (mathProblem: OOOValues) => {
-    if (mathProblem.solution == answer().value) {
-      setSRSObj({ ...sRSObj, right: [...sRSObj.right, mathProblem] });
-      setSRSObj({
-        ...sRSObj,
-        wrong: [
-          ...sRSObj.wrong.filter((val) => val.problem !== mathProblem.problem),
-        ],
-      });
-    } else {
-      setSRSObj({ ...sRSObj, wrong: [...sRSObj.wrong, mathProblem] });
-    }
-
-    form.reset();
-    checkSet();
+  const reset = () => {
+    setStudentPreviousReport({
+      ...studentPreviousReport,
+      iterations: studentPreviousReport.iterations++,
+      right: [],
+      wrong: [],
+    });
+    setCounter(0);
   };
 
   const startQuiz = () => {
-    // shuffle set
-    let shuffleArr = generatedLearningSet;
-    for (let i = shuffleArr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffleArr[i], shuffleArr[j]] = [shuffleArr[j], shuffleArr[i]];
-    }
-
-    setLearningSet(shuffleArr);
-    // set it back to default but get user currentsection
-    let currentSection = 1;
-    setSRSObj({ ...defaultSRSObj, currentSection });
+    setLearningSet(shuffleArr(generatedLearningSet));
+    reset();
+    setStudentPreviousReport({ ...studentPreviousReport, test: true });
+    setUserActions(UserActionsEnum.practice);
   };
 
-  return (
-    <Center>
-      <Text size={"120px"}>
-        {learningSet[counter].problem}
-        <Input type="number" {...form.getInputProps("answer")} />
-      </Text>
-      <Button disabled={!sRSObj.testing} onClick={() => startQuiz()}>
-        Start Quiz
-      </Button>
-      <Button
-        disabled={!form.getInputProps("answer").value}
-        onClick={() => solve(learningSet[counter])}
-      >
-        Next
-      </Button>
-    </Center>
-  );
+  const keepPracticing = () => {
+    setLearningSet(studentPreviousReport.wrong);
+    reset();
+    setUserActions(UserActionsEnum.practice);
+  };
+
+  const startPracticing = () => {
+    setLearningSet(generatedLearningSet);
+    reset();
+    setUserActions(UserActionsEnum.practice);
+  };
+
+  const nextLesson = () => {
+    // save progress on previous lesson start new one
+    setStudentPreviousReport({
+      ...defaultSRSObj,
+      currentSection: studentPreviousReport.currentSection + 1,
+    });
+    generateLearningSet;
+    setCounter(0);
+  };
+
+  const getHelp = () => {
+    setUserActions(UserActionsEnum.help);
+    // reach out to AI for help
+  };
+
+  return <Body />;
 };

@@ -8,16 +8,10 @@ import {
   Overlay,
   Group,
 } from "@mantine/core";
-import { getServerSession } from "next-auth";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
 export default function Home() {
-  const { data: session } = useSession();
-
-  console.log(session);
-
   return (
     <BackgroundImage src="/splash-page-background.png" h="100vh">
       <Overlay color="#000" backgroundOpacity={0.5} zIndex={0} />
