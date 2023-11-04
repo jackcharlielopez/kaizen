@@ -18,6 +18,14 @@ const StudentReportReducer = (
   action: { type: string; props: OOOValues }
 ) => {
   switch (action.type) {
+    case "nextSection":
+      return {
+        ...state,
+        currentSection: state.currentSection + 1,
+        right: [],
+        wrong: [],
+        test: false,
+      };
     case "nextIteration":
       return {
         ...state,
@@ -30,6 +38,8 @@ const StudentReportReducer = (
       return {
         ...state,
         test: true,
+        right: [],
+        wrong: [],
       };
     case "wrong":
       return {

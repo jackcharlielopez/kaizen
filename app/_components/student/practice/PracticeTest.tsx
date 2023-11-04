@@ -1,5 +1,5 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
-import { Group, Button, Text } from "@mantine/core";
+import { Group, Button, Text, Stack } from "@mantine/core";
 import { useContext } from "react";
 import { generateLearningSet, shuffleArr } from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
@@ -16,24 +16,26 @@ export const PracticeTest = ({
   const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
 
   const startQuiz = () => {
-    setLearningSet(shuffleArr(generatedLearningSet));
     reportDispatch({ type: "quiz" });
+    setLearningSet(shuffleArr(generatedLearningSet));
     practiceDispatch({ type: UserActionsEnum.practice });
+    setCounter(0);
   };
 
   const keepPracticing = () => {
     setLearningSet(reportState.wrong);
     reportDispatch({ type: "reset" });
     practiceDispatch({ type: UserActionsEnum.practice });
+    setCounter(0);
   };
 
   // TODO get parent max per set
   // TODO get parent subjects set
+  // TODO check if you reach end of all iterations to move to next subject
   const nextLesson = () => {
     reportDispatch({
-      type: "nextIteration",
+      type: "nextSection",
     });
-    generateLearningSet;
     setCounter(0);
   };
 
@@ -41,28 +43,29 @@ export const PracticeTest = ({
     reportDispatch({
       type: "nextSubject",
     });
-    generateLearningSet;
     setCounter(0);
   };
 
   if (reportState.test) {
     return (
-      <Group justify="center">
+      <Stack align="center">
         <Text>
           Your results were: {reportState.right.length} / {learningSet.length}{" "}
         </Text>
-        {reportState.wrong.length ? (
-          <Button onClick={keepPracticing}>Keep Practicing</Button>
-        ) : (
-          <Button onClick={nextLesson}>
-            Next Lesson ({reportState.currentSection + 1}'s)
-          </Button>
-        )}
-      </Group>
+        <Group justify="center">
+          {reportState.wrong.length ? (
+            <Button onClick={keepPracticing}>Keep Practicing</Button>
+          ) : (
+            <Button onClick={nextLesson}>
+              Next Lesson ({reportState.currentSection + 1}'s)
+            </Button>
+          )}
+        </Group>
+      </Stack>
     );
   } else {
     return (
-      <Group justify="center">
+      <Stack align="center">
         {reportState.wrong.length ? (
           <Text>
             We've done a lot of practicing, I think you are ready for the quiz.
@@ -74,11 +77,13 @@ export const PracticeTest = ({
             the quiz.
           </Text>
         )}
-        <Button onClick={startQuiz}>Start Quiz</Button>
-        {reportState.wrong.length && (
-          <Button onClick={keepPracticing}>Keep Practicing</Button>
-        )}
-      </Group>
+        <Group justify="center">
+          <Button onClick={startQuiz}>Start Quiz</Button>
+          {reportState.wrong.length && (
+            <Button onClick={keepPracticing}>Keep Practicing</Button>
+          )}
+        </Group>
+      </Stack>
     );
   }
 };
