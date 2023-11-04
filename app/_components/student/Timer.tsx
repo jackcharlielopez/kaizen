@@ -6,25 +6,24 @@ import {
   Text,
   rem,
 } from "@mantine/core";
-import { IconCheck, IconPlayerPause } from "@tabler/icons-react";
+import { IconPlayerPause } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
-import { StudentSessionStatus } from "./Student";
-import {
-  StudentSessionStatusContext,
-  StudentSessionStatusEnum,
-} from "@/@types/user-status.model";
+import { StudentSessionStatusEnum } from "@/@types/user-status.model";
+import { StudentSessionContext } from "@/app/_store/StudentSession.store";
 
 export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
-  const { studentSessionStatus, setStudentSessionStatus } =
-    useContext<StudentSessionStatusContext | null>(StudentSessionStatus);
+  const {
+    state: { status },
+    dispatch,
+  } = useContext(StudentSessionContext);
   const [timer, setTimer] = useState(lengthOfTime);
 
   // get timer to count down
   useEffect(() => {
-    if (studentSessionStatus !== StudentSessionStatusEnum.start) return;
+    if (status !== StudentSessionStatusEnum.start) return;
 
     if (timer === 0) {
-      setStudentSessionStatus(StudentSessionStatusEnum.finished);
+      dispatch({ type: StudentSessionStatusEnum.finished });
       return;
     }
 
@@ -33,7 +32,7 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timer, studentSessionStatus, setStudentSessionStatus]);
+  }, [timer, status, dispatch]);
   // get timer to count down
 
   const convertStoMs = () => {
@@ -45,17 +44,17 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
   };
 
   const toggleTimer = () => {
-    if (studentSessionStatus === StudentSessionStatusEnum.finished) return;
+    if (status === StudentSessionStatusEnum.finished) return;
 
-    if (studentSessionStatus === StudentSessionStatusEnum.start) {
-      setStudentSessionStatus(StudentSessionStatusEnum.stop);
+    if (status === StudentSessionStatusEnum.start) {
+      dispatch({ type: StudentSessionStatusEnum.stop });
     } else {
-      setStudentSessionStatus(StudentSessionStatusEnum.start);
+      dispatch({ type: StudentSessionStatusEnum.start });
     }
   };
 
   const Body = () => {
-    switch (studentSessionStatus) {
+    switch (status) {
       case StudentSessionStatusEnum.start:
         return (
           <RingProgress

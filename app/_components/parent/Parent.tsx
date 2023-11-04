@@ -1,6 +1,6 @@
+import { AccountContext } from "@/app/accounts/layout";
 import { Container, Flex } from "@mantine/core";
 import { useContext } from "react";
-import { AccountContext } from "../accounts/layout";
 
 const Parent = () => {
   let { id } = useContext(AccountContext);
