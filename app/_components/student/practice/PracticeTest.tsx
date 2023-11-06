@@ -31,12 +31,16 @@ export const PracticeTest = ({
 
   // TODO get parent max per set
   // TODO get parent subjects set
-  // TODO check if you reach end of all iterations to move to next subject
   const nextLesson = () => {
-    reportDispatch({
-      type: "nextSection",
-    });
-    setCounter(0);
+    if (reportState.lesson <= 10) {
+      reportDispatch({
+        type: "nextLesson",
+      });
+      setCounter(0);
+      practiceDispatch({ type: UserActionsEnum.review });
+    } else {
+      nextSubject();
+    }
   };
 
   const nextSubject = () => {
@@ -57,7 +61,7 @@ export const PracticeTest = ({
             <Button onClick={keepPracticing}>Keep Practicing</Button>
           ) : (
             <Button onClick={nextLesson}>
-              Next Lesson ({reportState.currentSection + 1}'s)
+              Next Lesson ({reportState.lesson + 1}'s)
             </Button>
           )}
         </Group>

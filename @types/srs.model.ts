@@ -1,15 +1,15 @@
 export interface SRSModel {
-  OOO: OOOEnum;
-  right: OOOValues[];
-  wrong: OOOValues[];
+  subject: subjectEnum;
+  right: subjectValues[];
+  wrong: subjectValues[];
   iterations: number;
-  currentSection: number;
+  lesson: number;
   testing: boolean;
 }
 
-export type OOOValues = { problem: string; solution: number };
+export type subjectValues = { problem: string; solution: number };
 
-export enum OOOEnum {
+export enum subjectEnum {
   addition = "+",
   subtraction = "-",
   multiplication = "*",
@@ -17,43 +17,43 @@ export enum OOOEnum {
 }
 
 export const defaultSRSObj: SRSModel = {
-  OOO: OOOEnum.addition,
+  subject: subjectEnum.addition,
   right: [],
   wrong: [],
   iterations: 0,
-  currentSection: 1,
+  lesson: 1,
   testing: false,
 };
 
-export const solution = (mathProblem: number[], operation: OOOEnum) => {
+export const solution = (mathProblem: number[], operation: subjectEnum) => {
   switch (operation) {
-    case OOOEnum.addition:
+    case subjectEnum.addition:
       return mathProblem[0] + mathProblem[1];
-    case OOOEnum.subtraction:
+    case subjectEnum.subtraction:
       return mathProblem[1] - mathProblem[0];
-    case OOOEnum.multiplication:
+    case subjectEnum.multiplication:
       return mathProblem[0] * mathProblem[1];
-    case OOOEnum.division:
+    case subjectEnum.division:
       return mathProblem[1] / mathProblem[0];
   }
 };
 
 export const generateLearningSet = (
-  operation: OOOEnum,
-  currentSection: number
+  operation: subjectEnum,
+  lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
   for (let x = 1; x <= 9; x++) {
     learningSet.push({
-      problem: currentSection + " " + operation + " " + x,
-      solution: solution([currentSection, x], operation),
+      problem: lesson + " " + operation + " " + x,
+      solution: solution([lesson, x], operation),
     });
   }
 
   return learningSet;
 };
 
-export const shuffleArr = (generatedLearningSet: OOOValues[]) => {
+export const shuffleArr = (generatedLearningSet: subjectValues[]) => {
   for (let i = generatedLearningSet.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [generatedLearningSet[i], generatedLearningSet[j]] = [

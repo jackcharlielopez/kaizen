@@ -1,4 +1,4 @@
-import { OOOValues } from "@/@types/srs.model";
+import { subjectValues } from "@/@types/srs.model";
 import { Group, Text, Input, Center } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useContext, useEffect } from "react";
@@ -10,7 +10,7 @@ export const PracticeQuestion = ({
   counter,
   setCounter,
 }: {
-  qandA: OOOValues;
+  qandA: subjectValues;
   counter: number;
   setCounter: any;
 }) => {

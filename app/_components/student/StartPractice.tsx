@@ -9,7 +9,6 @@ import { PracticeReview } from "./practice/PracticeReview";
 import { PracticeHelp } from "./practice/PracticeHelp";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
-import { number } from "zod";
 
 export const StartPractice = () => {
   const { state: reportState, dispatch: reportDispatch } =
@@ -20,10 +19,19 @@ export const StartPractice = () => {
     dispatch: practiceDispatch,
   } = useContext(PracticeSessionContext);
 
-  const generatedLearningSet = generateLearningSet(
-    reportState.OOO,
-    reportState.currentSection
+  const [generatedLearningSet, setGeneratedLearningSet] = useState(
+    generateLearningSet(reportState.subject, reportState.lesson)
   );
+
+  useEffect(() => {
+    const updatedLearningSet = generateLearningSet(
+      reportState.subject,
+      reportState.lesson
+    );
+
+    setGeneratedLearningSet(updatedLearningSet);
+    setLearningSet(updatedLearningSet);
+  }, [reportState.lesson, reportState.subject]);
 
   const [learningSet, setLearningSet] = useState(generatedLearningSet);
   const [counter, setCounter] = useState(0);

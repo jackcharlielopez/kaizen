@@ -1,6 +1,6 @@
 import {
-  OOOEnum,
-  OOOValues,
+  subjectEnum,
+  subjectValues,
   SRSModel,
   defaultSRSObj,
 } from "@/@types/srs.model";
@@ -15,13 +15,13 @@ const initialState: SRSModel = defaultSRSObj;
 
 const StudentReportReducer = (
   state: SRSModel,
-  action: { type: string; props: OOOValues }
+  action: { type: string; props: subjectValues }
 ) => {
   switch (action.type) {
-    case "nextSection":
+    case "nextLesson":
       return {
         ...state,
-        currentSection: state.currentSection + 1,
+        lesson: state.lesson + 1,
         right: [],
         wrong: [],
         test: false,
@@ -56,15 +56,15 @@ const StudentReportReducer = (
         ...defaultSRSObj,
       };
     case "nextSubject":
-      const subjects = Object.values(OOOEnum);
-      const index = subjects.findIndex(state.OOO);
-      const OOO = index + 1 < subjects.length && subjects[index + 1];
+      const subjects = Object.values(subjectEnum);
+      const index = subjects.findIndex(state.subject);
+      const subject = index + 1 < subjects.length && subjects[index + 1];
 
       return {
         ...state,
-        OOO,
+        subject,
         iterations: 0,
-        currentSection: 1,
+        lesson: 1,
         right: [],
         wrong: [],
         test: false,
