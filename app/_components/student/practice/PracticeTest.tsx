@@ -11,6 +11,8 @@ export const PracticeTest = ({
   setCounter,
   learningSet,
 }) => {
+  const maxPerLesson = 9;
+
   const { state: reportState, dispatch: reportDispatch } =
     useContext(StudentReportContext);
   const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
@@ -29,8 +31,6 @@ export const PracticeTest = ({
     setCounter(0);
   };
 
-  // TODO get parent max per set
-  // TODO get parent subjects set
   const nextLesson = () => {
     reportDispatch({
       type: "nextLesson",
@@ -56,7 +56,7 @@ export const PracticeTest = ({
         <Group justify="center">
           {reportState.wrong.length ? (
             <Button onClick={keepPracticing}>Keep Practicing</Button>
-          ) : reportState.lesson <= 9 ? (
+          ) : reportState.lesson <= maxPerLesson ? (
             <Button onClick={nextLesson}>
               Next Lesson ({reportState.lesson + 1}'s)
             </Button>

@@ -12,8 +12,8 @@ export type subjectValues = { problem: string; solution: number };
 export enum subjectEnum {
   addition = "+",
   subtraction = "-",
-  multiplication = "*",
-  division = "/",
+  multiplication = "×",
+  division = "÷",
 }
 
 export const findNextSubject = (subject: subjectEnum) => {
@@ -36,11 +36,11 @@ export const solution = (mathProblem: number[], operation: subjectEnum) => {
     case subjectEnum.addition:
       return mathProblem[0] + mathProblem[1];
     case subjectEnum.subtraction:
-      return mathProblem[1] - mathProblem[0];
+      return mathProblem[0] - mathProblem[1];
     case subjectEnum.multiplication:
       return mathProblem[0] * mathProblem[1];
     case subjectEnum.division:
-      return mathProblem[1] / mathProblem[0];
+      return mathProblem[0] / mathProblem[1];
   }
 };
 
@@ -49,8 +49,9 @@ export const generateLearningSet = (
   lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
+  const maxPerSet = 9;
 
-  for (let x = 1; x <= 9; x++) {
+  for (let x = 1; x <= maxPerSet; x++) {
     learningSet.push({
       problem: lesson + " " + operation + " " + x,
       solution: solution([lesson, x], operation),
