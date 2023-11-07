@@ -1,7 +1,7 @@
 import { subjectValues } from "@/@types/srs.model";
 import { Group, Text, Input, Center } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { useFocusTrap } from "@mantine/hooks";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 

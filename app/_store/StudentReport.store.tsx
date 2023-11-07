@@ -1,5 +1,4 @@
 import {
-  subjectEnum,
   subjectValues,
   SRSModel,
   defaultSRSObj,
@@ -64,6 +63,7 @@ const StudentReportReducer = (
         lesson: 1,
         right: [],
         wrong: [],
+        learningSet: [],
         test: false,
       };
     default:

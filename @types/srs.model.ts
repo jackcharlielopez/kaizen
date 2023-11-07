@@ -23,7 +23,7 @@ export const findNextSubject = (subject: subjectEnum) => {
 };
 
 export const defaultSRSObj: SRSModel = {
-  subject: subjectEnum.addition,
+  subject: Object.values(subjectEnum)[0],
   right: [],
   wrong: [],
   iterations: 0,

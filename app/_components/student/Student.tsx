@@ -1,5 +1,5 @@
 import { Group, Paper, Stack } from "@mantine/core";
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useContext, useMemo } from "react";
 import { AccountContext } from "../../accounts/layout";
 import { Timer } from "./Timer";
 import { StudentSessionStatusEnum } from "@/@types/user-status.model";

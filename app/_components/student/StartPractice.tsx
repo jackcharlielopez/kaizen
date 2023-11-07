@@ -15,7 +15,7 @@ export const StartPractice = () => {
     useContext(StudentReportContext);
 
   const {
-    state: { status },
+    state: { status, previousStatus },
     dispatch: practiceDispatch,
   } = useContext(PracticeSessionContext);
 
@@ -34,14 +34,9 @@ export const StartPractice = () => {
   }, [reportState.lesson, reportState.subject]);
 
   const [learningSet, setLearningSet] = useState(generatedLearningSet);
-  const [counter, setCounter] = useState(0);
-
-  const prevUserAction = useRef<UserActionsEnum>();
-
-  useEffect(() => {
-    if (status === UserActionsEnum.help) return;
-    prevUserAction.current = status;
-  }, [status]);
+  const [counter, setCounter] = useState(
+    reportState.wrong.length + reportState.right.length
+  );
 
   useEffect(() => {
     if (counter < learningSet.length) {
@@ -104,7 +99,7 @@ export const StartPractice = () => {
   };
 
   const goBack = () => {
-    practiceDispatch({ type: prevUserAction.current });
+    practiceDispatch({ type: previousStatus });
   };
 
   return (
