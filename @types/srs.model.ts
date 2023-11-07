@@ -16,6 +16,12 @@ export enum subjectEnum {
   division = "/",
 }
 
+export const findNextSubject = (subject: subjectEnum) => {
+  const subjects = Object.values(subjectEnum);
+  const index = subjects.indexOf(subject);
+  return index + 1 < subjects.length ? subjects[index + 1] : null;
+};
+
 export const defaultSRSObj: SRSModel = {
   subject: subjectEnum.addition,
   right: [],
@@ -43,6 +49,7 @@ export const generateLearningSet = (
   lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
+
   for (let x = 1; x <= 9; x++) {
     learningSet.push({
       problem: lesson + " " + operation + " " + x,

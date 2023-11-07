@@ -1,7 +1,7 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { Group, Button, Text, Stack } from "@mantine/core";
 import { useContext } from "react";
-import { generateLearningSet, shuffleArr } from "@/@types/srs.model";
+import { findNextSubject, shuffleArr } from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
@@ -32,15 +32,11 @@ export const PracticeTest = ({
   // TODO get parent max per set
   // TODO get parent subjects set
   const nextLesson = () => {
-    if (reportState.lesson <= 10) {
-      reportDispatch({
-        type: "nextLesson",
-      });
-      setCounter(0);
-      practiceDispatch({ type: UserActionsEnum.review });
-    } else {
-      nextSubject();
-    }
+    reportDispatch({
+      type: "nextLesson",
+    });
+    setCounter(0);
+    practiceDispatch({ type: UserActionsEnum.review });
   };
 
   const nextSubject = () => {
@@ -48,6 +44,7 @@ export const PracticeTest = ({
       type: "nextSubject",
     });
     setCounter(0);
+    practiceDispatch({ type: UserActionsEnum.review });
   };
 
   if (reportState.test) {
@@ -59,10 +56,16 @@ export const PracticeTest = ({
         <Group justify="center">
           {reportState.wrong.length ? (
             <Button onClick={keepPracticing}>Keep Practicing</Button>
-          ) : (
+          ) : reportState.lesson <= 9 ? (
             <Button onClick={nextLesson}>
               Next Lesson ({reportState.lesson + 1}'s)
             </Button>
+          ) : findNextSubject(reportState.subject) ? (
+            <Button onClick={nextSubject}>
+              Next Subject ({findNextSubject(reportState.subject)})
+            </Button>
+          ) : (
+            <Text>Course Completed</Text>
           )}
         </Group>
       </Stack>

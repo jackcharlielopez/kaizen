@@ -18,14 +18,14 @@ const Student = () => {
     state: { status },
   } = useContext(StudentSessionContext);
 
-  // capture pauses state
-
   const GetContent = () => {
     switch (status) {
       case StudentSessionStatusEnum.start:
         return StartPractice();
       case StudentSessionStatusEnum.finished:
         return EndPractice();
+      case StudentSessionStatusEnum.stop:
+        return "Will take a quick break";
       case StudentSessionStatusEnum.default:
         return <IntroPractice name={name.split(" ")[0]} />;
     }

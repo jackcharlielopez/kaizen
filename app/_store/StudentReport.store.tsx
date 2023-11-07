@@ -3,6 +3,7 @@ import {
   subjectValues,
   SRSModel,
   defaultSRSObj,
+  findNextSubject,
 } from "@/@types/srs.model";
 import { Dispatch, createContext, useReducer } from "react";
 
@@ -56,13 +57,9 @@ const StudentReportReducer = (
         ...defaultSRSObj,
       };
     case "nextSubject":
-      const subjects = Object.values(subjectEnum);
-      const index = subjects.findIndex(state.subject);
-      const subject = index + 1 < subjects.length && subjects[index + 1];
-
       return {
         ...state,
-        subject,
+        subject: findNextSubject(state.subject),
         iterations: 0,
         lesson: 1,
         right: [],
