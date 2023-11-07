@@ -36,7 +36,7 @@ const Student = () => {
       <PracticeSessionProvider>
         <Stack justify="flex-start" gap={0}>
           <Group justify="flex-end">
-            <Timer lengthOfTime={2200}></Timer>
+            <Timer lengthOfTime={1200}></Timer>
           </Group>
           <Group justify="center" h={500}>
             <Paper w={"60%"} shadow="md" withBorder p="sm" h={"70%"}>
