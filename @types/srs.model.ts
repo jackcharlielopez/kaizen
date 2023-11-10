@@ -31,17 +31,42 @@ export const defaultSRSObj: SRSModel = {
   testing: false,
 };
 
-export const solution = (mathProblem: number[], operation: subjectEnum) => {
+export const set = (
+  lesson: number,
+  nextNum: number,
+  operation: subjectEnum
+) => {
+  let nextSet: subjectValues | null = null;
+
   switch (operation) {
     case subjectEnum.addition:
-      return mathProblem[0] + mathProblem[1];
+      nextSet = {
+        problem: lesson + " " + operation + " " + nextNum,
+        solution: lesson + nextNum,
+      };
+      break;
     case subjectEnum.subtraction:
-      return mathProblem[0] - mathProblem[1];
+      if (lesson > nextNum) return;
+      nextSet = {
+        problem: nextNum + " " + operation + " " + lesson,
+        solution: nextNum - lesson,
+      };
+      break;
     case subjectEnum.multiplication:
-      return mathProblem[0] * mathProblem[1];
+      nextSet = {
+        problem: lesson + " " + operation + " " + nextNum,
+        solution: lesson * nextNum,
+      };
+      break;
     case subjectEnum.division:
-      return mathProblem[0] / mathProblem[1];
+      nextSet = {
+        problem: nextNum * lesson + " " + operation + " " + lesson,
+        solution: nextNum,
+      };
+      break;
   }
+
+  return nextSet;
 };
 
 export const generateLearningSet = (
@@ -52,10 +77,8 @@ export const generateLearningSet = (
   const maxPerSet = 9;
 
   for (let x = 1; x <= maxPerSet; x++) {
-    learningSet.push({
-      problem: lesson + " " + operation + " " + x,
-      solution: solution([lesson, x], operation),
-    });
+    const nextSet: subjectValues | undefined = set(lesson, x, operation);
+    nextSet && learningSet.push(nextSet);
   }
 
   return learningSet;
