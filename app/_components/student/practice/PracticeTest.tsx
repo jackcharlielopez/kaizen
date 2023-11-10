@@ -6,7 +6,7 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
 export const PracticeTest = ({ setCounter }) => {
-  const maxPerLesson = 1;
+  const maxPerLesson = 9;
 
   const { state: reportState, dispatch: reportDispatch } =
     useContext(StudentReportContext);
