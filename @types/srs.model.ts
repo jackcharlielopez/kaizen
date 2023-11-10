@@ -5,6 +5,8 @@ export interface SRSModel {
   iterations: number;
   lesson: number;
   testing: boolean;
+  learningSet: subjectValues[];
+  currentSet: subjectValues[];
 }
 
 export type subjectValues = { problem: string; solution: number };
@@ -20,15 +22,6 @@ export const findNextSubject = (subject: subjectEnum) => {
   const subjects = Object.values(subjectEnum);
   const index = subjects.indexOf(subject);
   return index + 1 < subjects.length ? subjects[index + 1] : null;
-};
-
-export const defaultSRSObj: SRSModel = {
-  subject: Object.values(subjectEnum)[0],
-  right: [],
-  wrong: [],
-  iterations: 0,
-  lesson: 1,
-  testing: false,
 };
 
 export const set = (
@@ -74,7 +67,7 @@ export const generateLearningSet = (
   lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
-  const maxPerSet = 9;
+  const maxPerSet = 1;
 
   for (let x = 1; x <= maxPerSet; x++) {
     const nextSet: subjectValues | undefined = set(lesson, x, operation);
@@ -82,6 +75,21 @@ export const generateLearningSet = (
   }
 
   return learningSet;
+};
+
+const subject = Object.values(subjectEnum)[0];
+const lesson = 1;
+const currentSet = generateLearningSet(subject, lesson);
+
+export const defaultSRSObj: SRSModel = {
+  subject,
+  right: [],
+  wrong: [],
+  iterations: 0,
+  lesson,
+  testing: false,
+  learningSet: currentSet,
+  currentSet,
 };
 
 export const shuffleArr = (generatedLearningSet: subjectValues[]) => {

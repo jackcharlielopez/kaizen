@@ -1,5 +1,4 @@
-import { generateLearningSet } from "@/@types/srs.model";
-import { ActionIcon, Stack } from "@mantine/core";
+import { ActionIcon, Stack, Text } from "@mantine/core";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { PracticeQuestion } from "./practice/PracticeQuestion";
@@ -19,27 +18,12 @@ export const StartPractice = () => {
     dispatch: practiceDispatch,
   } = useContext(PracticeSessionContext);
 
-  const [generatedLearningSet, setGeneratedLearningSet] = useState(
-    generateLearningSet(reportState.subject, reportState.lesson)
-  );
-
-  useEffect(() => {
-    const updatedLearningSet = generateLearningSet(
-      reportState.subject,
-      reportState.lesson
-    );
-
-    setGeneratedLearningSet(updatedLearningSet);
-    setLearningSet(updatedLearningSet);
-  }, [reportState.lesson, reportState.subject]);
-
-  const [learningSet, setLearningSet] = useState(generatedLearningSet);
   const [counter, setCounter] = useState(
     reportState.wrong.length + reportState.right.length
   );
 
   useEffect(() => {
-    if (counter < learningSet.length) {
+    if (counter < reportState.currentSet.length) {
       return;
     }
 
@@ -48,19 +32,15 @@ export const StartPractice = () => {
       return;
     }
 
-    if (counter === learningSet.length && reportState.test) {
+    if (counter === reportState.currentSet.length && reportState.test) {
       practiceDispatch({ type: UserActionsEnum.test });
       return;
     }
 
-    if (counter === learningSet.length && reportState.wrong.length) {
-      // move learning set to be whatever user got wrong
-      setLearningSet(reportState.wrong);
-      // clear out the wrong category and update iteration
+    if (counter === reportState.currentSet.length && reportState.wrong.length) {
       reportDispatch({
         type: "nextIteration",
       });
-      // restart counter
       setCounter(0);
     } else {
       practiceDispatch({ type: UserActionsEnum.test });
@@ -73,20 +53,14 @@ export const StartPractice = () => {
         return PracticeHelp();
       case UserActionsEnum.test:
         return PracticeTest({
-          setLearningSet,
-          generatedLearningSet,
           setCounter,
-          learningSet,
         });
       case UserActionsEnum.review:
-        return PracticeReview({
-          generatedLearningSet,
-          setLearningSet,
-        });
+        return PracticeReview();
       default:
         return (
           <PracticeQuestion
-            qandA={learningSet[counter]}
+            qandA={reportState.currentSet[counter]}
             counter={counter}
             setCounter={setCounter}
           ></PracticeQuestion>
@@ -114,11 +88,13 @@ export const StartPractice = () => {
         </ActionIcon>
       )}
       <Stack align="center" justify="center" h={"100%"}>
+        {(!reportState.currentSet.length ||
+          !reportState.learningSet.length) && <Text>No Data</Text>}
         {useMemo(
           () => (
             <Body />
           ),
-          [status, counter, learningSet, setLearningSet]
+          [status, counter]
         )}
       </Stack>
     </>

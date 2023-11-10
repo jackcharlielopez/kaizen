@@ -3,6 +3,8 @@ import {
   SRSModel,
   defaultSRSObj,
   findNextSubject,
+  shuffleArr,
+  generateLearningSet,
 } from "@/@types/srs.model";
 import { Dispatch, createContext, useReducer } from "react";
 
@@ -19,20 +21,28 @@ const StudentReportReducer = (
 ) => {
   switch (action.type) {
     case "nextLesson":
+      const lesson = state.lesson + 1;
+      const learningSet = generateLearningSet(state.subject, lesson);
+
       return {
         ...state,
-        lesson: state.lesson + 1,
+        lesson,
         right: [],
         wrong: [],
         test: false,
+        learningSet,
+        currentSet: learningSet,
       };
     case "nextIteration":
+      const iterations = state.iterations + 1;
+
       return {
         ...state,
-        iterations: state.iterations + 1,
+        iterations,
         right: [],
         wrong: [],
         test: false,
+        currentSet: state.wrong,
       };
     case "quiz":
       return {
@@ -40,6 +50,7 @@ const StudentReportReducer = (
         test: true,
         right: [],
         wrong: [],
+        currentSet: shuffleArr(state.learningSet),
       };
     case "wrong":
       return {
@@ -56,15 +67,31 @@ const StudentReportReducer = (
         ...defaultSRSObj,
       };
     case "nextSubject":
+      const nextlesson = 1;
+      const subject = findNextSubject(state.subject);
+
+      const nextlearningSet = subject
+        ? generateLearningSet(subject, nextlesson)
+        : [];
+
       return {
         ...state,
-        subject: findNextSubject(state.subject),
+        subject,
         iterations: 0,
-        lesson: 1,
+        lesson: nextlesson,
         right: [],
         wrong: [],
-        learningSet: [],
+        learningSet: nextlearningSet,
+        currentSet: nextlearningSet,
         test: false,
+      };
+    case "practice":
+      return {
+        ...state,
+        right: [],
+        wrong: [],
+        test: false,
+        currentSet: state.learningSet,
       };
     default:
       return state;

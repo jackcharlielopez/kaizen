@@ -5,28 +5,22 @@ import { findNextSubject, shuffleArr } from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
-export const PracticeTest = ({
-  setLearningSet,
-  generatedLearningSet,
-  setCounter,
-  learningSet,
-}) => {
-  const maxPerLesson = 9;
+export const PracticeTest = ({ setCounter }) => {
+  const maxPerLesson = 1;
 
   const { state: reportState, dispatch: reportDispatch } =
     useContext(StudentReportContext);
+
   const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
 
   const startQuiz = () => {
     reportDispatch({ type: "quiz" });
-    setLearningSet(shuffleArr(generatedLearningSet));
     practiceDispatch({ type: UserActionsEnum.practice });
     setCounter(0);
   };
 
   const keepPracticing = () => {
-    setLearningSet(reportState.wrong);
-    reportDispatch({ type: "reset" });
+    reportDispatch({ type: "practice" });
     practiceDispatch({ type: UserActionsEnum.practice });
     setCounter(0);
   };
@@ -35,23 +29,24 @@ export const PracticeTest = ({
     reportDispatch({
       type: "nextLesson",
     });
-    setCounter(0);
     practiceDispatch({ type: UserActionsEnum.review });
+    setCounter(0);
   };
 
   const nextSubject = () => {
     reportDispatch({
       type: "nextSubject",
     });
-    setCounter(0);
     practiceDispatch({ type: UserActionsEnum.review });
+    setCounter(0);
   };
 
   if (reportState.test) {
     return (
       <Stack align="center">
         <Text>
-          Your results were: {reportState.right.length} / {learningSet.length}{" "}
+          Your results were:
+          {` ${reportState.right.length} / ${reportState.learningSet.length}`}
         </Text>
         <Group justify="center">
           {reportState.wrong.length ? (

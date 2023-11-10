@@ -1,16 +1,20 @@
 import { subjectValues } from "@/@types/srs.model";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
+import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { Center, Grid, Button, Text } from "@mantine/core";
 import { useContext } from "react";
 
-export const PracticeReview = ({ setLearningSet, generatedLearningSet }) => {
+export const PracticeReview = () => {
+  const { state: reportState, dispatch: reportDispatch } =
+    useContext(StudentReportContext);
+
   const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
   const colSpan = 4;
   let row = 1;
 
   const startPracticing = () => {
-    setLearningSet(generatedLearningSet);
+    reportDispatch({ type: "practice" });
     practiceDispatch({ type: UserActionsEnum.practice });
   };
 
@@ -35,7 +39,7 @@ export const PracticeReview = ({ setLearningSet, generatedLearningSet }) => {
         <Text size={"xl"}>Lesson Review</Text>
       </Center>
       <Grid gutter="md" grow>
-        {generatedLearningSet.map((val: subjectValues, i: number) => (
+        {reportState.learningSet.map((val: subjectValues, i: number) => (
           <Grid.Col span={colSpan} key={Math.random()} order={getOrder(i + 1)}>
             <Center>
               <Text size={"xl"}>{`${val.problem} = ${val.solution}`}</Text>
