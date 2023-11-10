@@ -11,12 +11,12 @@ import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
 export const StartPractice = () => {
   const { state: reportState, dispatch: reportDispatch } =
-    useContext(StudentReportContext);
+    useContext<any>(StudentReportContext);
 
   const {
     state: { status, previousStatus },
     dispatch: practiceDispatch,
-  } = useContext(PracticeSessionContext);
+  } = useContext<any>(PracticeSessionContext);
 
   const [counter, setCounter] = useState(
     reportState.wrong.length + reportState.right.length

@@ -7,7 +7,7 @@ import Student from "../_components/student/Student";
 import { StudentSessionProvider } from "../_store/StudentSession.store";
 
 const UserAccount = () => {
-  const { role } = useContext(AccountContext);
+  const { role } = useContext<any>(AccountContext);
 
   if (role === "parent") return <Parent />;
 

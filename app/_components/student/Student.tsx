@@ -13,10 +13,10 @@ import { StudentReportProvider } from "@/app/_store/StudentReport.store";
 
 // TODO save when user is finished
 const Student = () => {
-  const { name } = useContext(AccountContext);
+  const { name } = useContext<any>(AccountContext);
   const {
     state: { status },
-  } = useContext(StudentSessionContext);
+  } = useContext<any>(StudentSessionContext);
 
   const GetContent = () => {
     switch (status) {

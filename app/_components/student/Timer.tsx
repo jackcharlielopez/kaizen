@@ -15,7 +15,7 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
   const {
     state: { status },
     dispatch,
-  } = useContext(StudentSessionContext);
+  } = useContext<any>(StudentSessionContext);
   const [timer, setTimer] = useState(lengthOfTime);
 
   // get timer to count down

@@ -4,7 +4,7 @@ import { Button, Text } from "@mantine/core";
 import { useContext } from "react";
 
 export const IntroPractice = ({ name }: { name: string }) => {
-  const { dispatch } = useContext(StudentSessionContext);
+  const { dispatch } = useContext<any>(StudentSessionContext);
 
   const startAssessment = () => {
     dispatch({ type: StudentSessionStatusEnum.start });

@@ -14,7 +14,7 @@ export const PracticeQuestion = ({
   counter: number;
   setCounter: any;
 }) => {
-  const { dispatch: reportDispatch } = useContext(StudentReportContext);
+  const { dispatch: reportDispatch } = useContext<any>(StudentReportContext);
 
   // Focus on the input field
   const focusTrapRef = useFocusTrap();

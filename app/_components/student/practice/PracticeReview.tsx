@@ -7,9 +7,11 @@ import { useContext } from "react";
 
 export const PracticeReview = () => {
   const { state: reportState, dispatch: reportDispatch } =
-    useContext(StudentReportContext);
+    useContext<any>(StudentReportContext);
 
-  const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
+  const { dispatch: practiceDispatch } = useContext<any>(
+    PracticeSessionContext
+  );
   const colSpan = 4;
   let row = 1;
 

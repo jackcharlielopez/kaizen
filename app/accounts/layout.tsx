@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Flex,
-  Group,
-  Modal,
-  Stack,
-} from "@mantine/core";
+import { Avatar, Box, Button, Flex, Group, Modal, Stack } from "@mantine/core";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../_trpc/client";
@@ -21,7 +12,7 @@ export interface userProps {
   role: string;
   name: string;
   id: string;
-  students?: Student[];
+  students?: any[];
 }
 
 const getInitials = (name: string) => {

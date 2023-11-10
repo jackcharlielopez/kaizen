@@ -1,17 +1,19 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { Group, Button, Text, Stack } from "@mantine/core";
 import { useContext } from "react";
-import { findNextSubject, shuffleArr } from "@/@types/srs.model";
+import { findNextSubject } from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
-export const PracticeTest = ({ setCounter }) => {
+export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
   const maxPerLesson = 9;
 
   const { state: reportState, dispatch: reportDispatch } =
-    useContext(StudentReportContext);
+    useContext<any>(StudentReportContext);
 
-  const { dispatch: practiceDispatch } = useContext(PracticeSessionContext);
+  const { dispatch: practiceDispatch } = useContext<any>(
+    PracticeSessionContext
+  );
 
   const startQuiz = () => {
     reportDispatch({ type: "quiz" });
