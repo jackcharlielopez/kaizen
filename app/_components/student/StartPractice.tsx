@@ -54,10 +54,16 @@ export const StartPractice = () => {
     }
   }, [counter]);
 
+  const getHelpMessage = () => {
+    return previousStatus === UserActionsEnum.review
+      ? JSON.stringify(reportState.learningSet)
+      : JSON.stringify(reportState.currentSet[counter]);
+  };
+
   const Body = () => {
     switch (status) {
       case UserActionsEnum.help:
-        return PracticeHelp();
+        return PracticeHelp(getHelpMessage());
       case UserActionsEnum.test:
         return PracticeTest({
           setCounter,

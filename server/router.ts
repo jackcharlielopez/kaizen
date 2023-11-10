@@ -2,8 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { protectedProcedure, router } from "./trpc";
 import { z } from "zod";
 import openai from "@/lib/openai";
-import { ChatCompletionMessage } from "openai/resources/chat/index.mjs";
-import { LearningPrompt } from "@/lib/Prompts";
+import { GetHelpPrompt } from "@/lib/prompts";
 
 export const appRouter = router({
   getStudents: protectedProcedure
@@ -25,30 +24,22 @@ export const appRouter = router({
         },
       });
     }),
-  setOpenAiMessage: protectedProcedure
-    .input(
-      z.array(
-        z.object({
-          role: z.string(),
-          content: z.string().nullable(),
-        })
-      )
-    )
-    .output(
-      z.object({
-        role: z.string(),
-        content: z.string().nullable(),
-      })
-    )
-    .mutation(async ({ input: message }) => {
-      const res = await openai.chat.completions.create({
-        model: "gpt-4",
-        max_tokens: 15,
-        temperature: 0.7,
-        messages: [LearningPrompt, ...message] as any,
-      });
+  getHelpAI: protectedProcedure
+    .input(z.string())
+    .output(z.string().nullable())
+    .mutation(async ({ input: content }) => {
+      try {
+        const res = await openai.chat.completions.create({
+          model: "gpt-4",
+          max_tokens: 150,
+          temperature: 0.7,
+          messages: [GetHelpPrompt, { role: "user", content }] as any,
+        });
 
-      return { response: res.choices[0].message };
+        return res.choices[0].message.content;
+      } catch {
+        throw new Error("Failed to connect to tutor");
+      }
     }),
 });
 

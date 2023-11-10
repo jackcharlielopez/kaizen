@@ -44,7 +44,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
     handlers.close();
   };
 
-  if (status === "loading") return <Box>Loading...</Box>;
+  if (status === "loading") return <Box>...loading</Box>;
 
   if (props && status === "authenticated" && !opened) {
     return (
