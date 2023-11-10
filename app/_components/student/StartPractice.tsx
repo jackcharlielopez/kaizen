@@ -24,7 +24,7 @@ export const StartPractice = () => {
 
   // handles user flow when user completes a set
   useEffect(() => {
-    if (reportState.currentSet.length) {
+    if (reportState.learningSet.length) {
       if (counter < reportState.currentSet.length) {
         return;
       }
@@ -34,7 +34,7 @@ export const StartPractice = () => {
         return;
       }
 
-      if (counter === reportState.currentSet.length && reportState.test) {
+      if (counter === reportState.currentSet.length && reportState.testing) {
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
@@ -43,9 +43,7 @@ export const StartPractice = () => {
         counter === reportState.currentSet.length &&
         reportState.wrong.length
       ) {
-        reportDispatch({
-          type: "nextIteration",
-        });
+        reportDispatch({ type: "iterate" });
         setCounter(0);
       } else {
         practiceDispatch({ type: UserActionsEnum.test });

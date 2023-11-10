@@ -3,7 +3,6 @@ import { UserActionsEnum } from "@/@types/user-status.model";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { Center, Grid, Button, Text } from "@mantine/core";
-import { useFocusTrap } from "@mantine/hooks";
 import { useContext } from "react";
 
 export const PracticeReview = () => {

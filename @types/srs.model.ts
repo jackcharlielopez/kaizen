@@ -67,7 +67,7 @@ export const generateLearningSet = (
   lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
-  const maxPerSet = 9;
+  const maxPerSet = 1;
 
   for (let x = 1; x <= maxPerSet; x++) {
     const nextSet: subjectValues | undefined = set(lesson, x, operation);

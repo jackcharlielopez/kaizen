@@ -20,37 +20,60 @@ const StudentReportReducer = (
   action: { type: string; props: subjectValues }
 ) => {
   switch (action.type) {
+    case "nextSubject":
+      const subject = findNextSubject(state.subject);
+      const nextlearningSet = subject ? generateLearningSet(subject, 1) : [];
+
+      return {
+        ...state,
+        subject,
+        right: [],
+        wrong: [],
+        iterations: 0,
+        lesson: 1,
+        learningSet: nextlearningSet,
+        currentSet: nextlearningSet,
+        testing: false,
+      };
     case "nextLesson":
       const lesson = state.lesson + 1;
       const learningSet = generateLearningSet(state.subject, lesson);
 
       return {
         ...state,
-        lesson,
         right: [],
         wrong: [],
-        test: false,
+        iterations: 0,
+        lesson,
+        testing: false,
         learningSet,
         currentSet: learningSet,
-      };
-    case "nextIteration":
-      const iterations = state.iterations + 1;
-
-      return {
-        ...state,
-        iterations,
-        right: [],
-        wrong: [],
-        test: false,
-        currentSet: state.wrong,
       };
     case "quiz":
       return {
         ...state,
-        test: true,
         right: [],
         wrong: [],
+        iterations: 0,
+        testing: true,
         currentSet: shuffleArr(state.learningSet),
+      };
+    case "practice":
+      return {
+        ...state,
+        right: [],
+        wrong: [],
+        iterations: 0,
+        testing: false,
+        currentSet: state.wrong.length ? state.wrong : state.learningSet,
+      };
+    case "iterate":
+      const iterations = state.iterations + 1;
+      return {
+        ...state,
+        right: [],
+        wrong: [],
+        iterations,
       };
     case "wrong":
       return {
@@ -62,39 +85,8 @@ const StudentReportReducer = (
         ...state,
         right: [...state.right, action.props],
       };
-    case "reset":
-      return {
-        ...defaultSRSObj,
-      };
-    case "nextSubject":
-      const nextlesson = 1;
-      const subject = findNextSubject(state.subject);
-
-      const nextlearningSet = subject
-        ? generateLearningSet(subject, nextlesson)
-        : [];
-
-      return {
-        ...state,
-        subject,
-        iterations: 0,
-        lesson: nextlesson,
-        right: [],
-        wrong: [],
-        learningSet: nextlearningSet,
-        currentSet: nextlearningSet,
-        test: false,
-      };
-    case "practice":
-      return {
-        ...state,
-        right: [],
-        wrong: [],
-        test: false,
-        currentSet: state.learningSet,
-      };
     default:
-      return state;
+      return throwErr();
   }
 };
 
@@ -115,3 +107,6 @@ export const StudentReportProvider = ({
     </StudentReportContext.Provider>
   );
 };
+function throwErr() {
+  throw new Error("Function not implemented.");
+}
