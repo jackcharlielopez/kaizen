@@ -1,5 +1,5 @@
-import { ActionIcon, Stack, Text } from "@mantine/core";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { ActionIcon, Stack } from "@mantine/core";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { PracticeQuestion } from "./practice/PracticeQuestion";
 import { IconArrowBackUp, IconHelpCircle } from "@tabler/icons-react";
@@ -22,28 +22,37 @@ export const StartPractice = () => {
     reportState.wrong.length + reportState.right.length
   );
 
+  // handles user flow when user completes a set
   useEffect(() => {
-    if (counter < reportState.currentSet.length) {
-      return;
-    }
+    if (reportState.currentSet.length) {
+      if (counter < reportState.currentSet.length) {
+        return;
+      }
 
-    if (reportState.iterations === 2) {
-      practiceDispatch({ type: UserActionsEnum.test });
-      return;
-    }
+      if (reportState.iterations === 2) {
+        practiceDispatch({ type: UserActionsEnum.test });
+        return;
+      }
 
-    if (counter === reportState.currentSet.length && reportState.test) {
-      practiceDispatch({ type: UserActionsEnum.test });
-      return;
-    }
+      if (counter === reportState.currentSet.length && reportState.test) {
+        practiceDispatch({ type: UserActionsEnum.test });
+        return;
+      }
 
-    if (counter === reportState.currentSet.length && reportState.wrong.length) {
-      reportDispatch({
-        type: "nextIteration",
-      });
-      setCounter(0);
+      if (
+        counter === reportState.currentSet.length &&
+        reportState.wrong.length
+      ) {
+        reportDispatch({
+          type: "nextIteration",
+        });
+        setCounter(0);
+      } else {
+        practiceDispatch({ type: UserActionsEnum.test });
+      }
     } else {
       practiceDispatch({ type: UserActionsEnum.test });
+      return;
     }
   }, [counter]);
 
@@ -79,7 +88,12 @@ export const StartPractice = () => {
   return (
     <>
       {status === UserActionsEnum.help ? (
-        <ActionIcon style={{ alignSelf: "end" }} size="xl" onClick={goBack}>
+        <ActionIcon
+          autoFocus
+          style={{ alignSelf: "end" }}
+          size="xl"
+          onClick={goBack}
+        >
           <IconArrowBackUp />
         </ActionIcon>
       ) : (
@@ -88,8 +102,6 @@ export const StartPractice = () => {
         </ActionIcon>
       )}
       <Stack align="center" justify="center" h={"100%"}>
-        {(!reportState.currentSet.length ||
-          !reportState.learningSet.length) && <Text>No Data</Text>}
         {useMemo(
           () => (
             <Body />

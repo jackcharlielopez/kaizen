@@ -6,7 +6,7 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
 export const PracticeTest = ({ setCounter }) => {
-  const maxPerLesson = 1;
+  const maxPerLesson = 9;
 
   const { state: reportState, dispatch: reportDispatch } =
     useContext(StudentReportContext);
@@ -41,6 +41,37 @@ export const PracticeTest = ({ setCounter }) => {
     setCounter(0);
   };
 
+  const Next = () => {
+    return (
+      <Group justify="center">
+        {reportState.wrong.length ? (
+          <Button autoFocus onClick={keepPracticing}>
+            Keep Practicing
+          </Button>
+        ) : reportState.lesson <= maxPerLesson ? (
+          <Button autoFocus onClick={nextLesson}>
+            Next Lesson ({reportState.lesson + 1}'s)
+          </Button>
+        ) : findNextSubject(reportState.subject) ? (
+          <Button autoFocus onClick={nextSubject}>
+            Next Subject ({findNextSubject(reportState.subject)})
+          </Button>
+        ) : (
+          <Text>Course Completed</Text>
+        )}
+      </Group>
+    );
+  };
+
+  if (!reportState.currentSet.length) {
+    return (
+      <>
+        <Text>No Data Found in Current Set</Text>
+        <Next />
+      </>
+    );
+  }
+
   if (reportState.test) {
     return (
       <Stack align="center">
@@ -48,21 +79,7 @@ export const PracticeTest = ({ setCounter }) => {
           Your results were:
           {` ${reportState.right.length} / ${reportState.learningSet.length}`}
         </Text>
-        <Group justify="center">
-          {reportState.wrong.length ? (
-            <Button onClick={keepPracticing}>Keep Practicing</Button>
-          ) : reportState.lesson <= maxPerLesson ? (
-            <Button onClick={nextLesson}>
-              Next Lesson ({reportState.lesson + 1}'s)
-            </Button>
-          ) : findNextSubject(reportState.subject) ? (
-            <Button onClick={nextSubject}>
-              Next Subject ({findNextSubject(reportState.subject)})
-            </Button>
-          ) : (
-            <Text>Course Completed</Text>
-          )}
-        </Group>
+        <Next />
       </Stack>
     );
   } else {
@@ -80,7 +97,9 @@ export const PracticeTest = ({ setCounter }) => {
           </Text>
         )}
         <Group justify="center">
-          <Button onClick={startQuiz}>Start Quiz</Button>
+          <Button autoFocus onClick={startQuiz}>
+            Start Quiz
+          </Button>
           {reportState.wrong.length && (
             <Button onClick={keepPracticing}>Keep Practicing</Button>
           )}

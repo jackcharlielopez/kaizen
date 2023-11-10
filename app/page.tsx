@@ -35,7 +35,7 @@ export default function Home() {
           A personalized tutor for your child, through the power of AI
         </Text>
 
-        <Button variant="filled" onClick={() => signIn()}>
+        <Button autoFocus variant="filled" onClick={() => signIn()}>
           Try Risk Free 7 Day Trial
         </Button>
       </Stack>
