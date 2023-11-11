@@ -3,6 +3,8 @@ import { protectedProcedure, router } from "./trpc";
 import { z } from "zod";
 import openai from "@/lib/openai";
 import { GetHelpPrompt } from "@/lib/prompts";
+import fs from "fs";
+import path from "path";
 
 export const appRouter = router({
   getStudents: protectedProcedure
@@ -30,7 +32,7 @@ export const appRouter = router({
     .mutation(async ({ input: content }) => {
       try {
         const res = await openai.chat.completions.create({
-          model: "gpt-4",
+          model: "gpt-4-1106-preview",
           max_tokens: 150,
           temperature: 0.7,
           messages: [GetHelpPrompt, { role: "user", content }] as any,
@@ -39,6 +41,27 @@ export const appRouter = router({
         return res.choices[0].message.content;
       } catch {
         throw new Error("Failed to connect to tutor");
+      }
+    }),
+  converTextToSpeech: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ input }) => {
+      try {
+        const res: any = await openai.audio.speech.create({
+          model: "tts-1",
+          voice: "alloy",
+          input,
+        });
+
+        const filePath = path.join(process.cwd(), "output.mp3");
+
+        const buffer = Buffer.from(await res.arrayBuffer());
+
+        await fs.promises.writeFile(filePath, buffer);
+
+        return filePath;
+      } catch (error) {
+        throw new Error("Failed to convert text to speech");
       }
     }),
 });
