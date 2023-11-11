@@ -21,9 +21,7 @@ export const PracticeHelp = (content: string) => {
     if (getHelpRes) getHelpVoice(getHelpRes);
   }, [getHelpRes]);
 
-  useEffect(() => {
-    console.log(getVoiceRes);
-  }, [getVoiceRes]);
+  useEffect(() => {}, [getVoiceRes]);
 
   if (isLoading) return <Text>...loading</Text>;
 
