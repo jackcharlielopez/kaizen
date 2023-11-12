@@ -53,13 +53,14 @@ export const appRouter = router({
           input,
         });
 
-        const filePath = path.join(process.cwd(), "output.mp3");
+        const file = `/${Date.now()}.mp3`;
+        const filePath = path.join(process.cwd(), `./public${file}`);
 
         const buffer = Buffer.from(await res.arrayBuffer());
 
         await fs.promises.writeFile(filePath, buffer);
 
-        return filePath;
+        return file;
       } catch (error) {
         throw new Error("Failed to convert text to speech");
       }
