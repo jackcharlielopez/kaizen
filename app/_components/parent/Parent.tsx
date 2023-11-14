@@ -24,7 +24,7 @@ const Parent = () => {
               </Tabs.Tab>
             );
           })}
-          <Tabs.Tab value="new student">+</Tabs.Tab>
+          <Tabs.Tab value="new student">+ Student</Tabs.Tab>
 
           <Tabs.Tab value="account" ml="auto">
             Account
@@ -33,14 +33,18 @@ const Parent = () => {
 
         {students.map((student: { id: string; name: string }) => {
           return (
-            <Tabs.Panel key={student.id} value={student.id}>
+            <Tabs.Panel key={student.id} value={student.id} p="sm">
               {student.name}
             </Tabs.Panel>
           );
         })}
 
-        <Tabs.Panel value="new student">add new student</Tabs.Panel>
-        <Tabs.Panel value="account">account</Tabs.Panel>
+        <Tabs.Panel value="new student" p="sm">
+          add new student
+        </Tabs.Panel>
+        <Tabs.Panel value="account" p="sm">
+          account
+        </Tabs.Panel>
       </Tabs>
     </Flex>
   );
