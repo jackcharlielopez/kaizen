@@ -1,9 +1,11 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { Group, Button, Text, Stack } from "@mantine/core";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { findNextSubject } from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
+import { Fireworks } from "@fireworks-js/react";
+import type { FireworksHandlers } from "@fireworks-js/react";
 
 export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
   const maxPerLesson = 9;
@@ -14,6 +16,24 @@ export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
   const { dispatch: practiceDispatch } = useContext<any>(
     PracticeSessionContext
   );
+
+  const ref = useRef<FireworksHandlers>(null);
+
+  const ShowFireWorks = () => {
+    return (
+      <Fireworks
+        ref={ref}
+        options={{ opacity: 0.5 }}
+        style={{
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          position: "fixed",
+        }}
+      />
+    );
+  };
 
   const startQuiz = () => {
     reportDispatch({ type: "quiz" });
@@ -80,6 +100,9 @@ export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
         <Text>
           Your results were:
           {` ${reportState.right.length} / ${reportState.learningSet.length}`}
+          {reportState.right.length === reportState.learningSet.length && (
+            <ShowFireWorks />
+          )}
         </Text>
         <Next />
       </Stack>
@@ -98,7 +121,7 @@ export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
             the quiz.
           </Text>
         )}
-        <Group justify="center">
+        <Group justify="center" mt="lg">
           <Button autoFocus onClick={startQuiz}>
             Start Quiz
           </Button>

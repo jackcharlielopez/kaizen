@@ -1,6 +1,15 @@
 "use client";
 
-import { Avatar, Box, Button, Flex, Group, Modal, Stack } from "@mantine/core";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Group,
+  Modal,
+  Skeleton,
+  Stack,
+} from "@mantine/core";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../_trpc/client";
@@ -23,7 +32,7 @@ const getInitials = (name: string) => {
 export const AccountContext = createContext<userProps | undefined>(undefined);
 
 const AccountLayout = ({ children }: { children: React.ReactNode }) => {
-  const { data } = trpc.getStudents.useQuery();
+  const { data, isLoading: isLoadingStudents } = trpc.getStudents.useQuery();
   const { data: session, status } = useSession();
   const [props, setProps] = useState<userProps | undefined>();
 
@@ -43,8 +52,6 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
     handlers.close();
   };
-
-  if (status === "loading") return <Box>...loading</Box>;
 
   if (props && status === "authenticated" && !opened) {
     return (
@@ -77,6 +84,45 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
+  const Loading = () => {
+    return (
+      <>
+        <Skeleton height={84} width={84} />
+        <Skeleton height={84} width={84} />
+        <Skeleton height={84} width={84} />
+      </>
+    );
+  };
+
+  const Profiles = () => {
+    return (
+      <>
+        <Avatar
+          variant="filled"
+          radius="sm"
+          size="xl"
+          component="button"
+          onClick={() => setUserProps("parent")}
+        >
+          {getInitials(session?.user.name)}
+        </Avatar>
+
+        {data?.map((item) => (
+          <Avatar
+            key={item.id}
+            variant="filled"
+            radius="sm"
+            size="xl"
+            component="button"
+            onClick={() => setUserProps("student", item)}
+          >
+            {getInitials(item.name)}
+          </Avatar>
+        ))}
+      </>
+    );
+  };
+
   return (
     <Modal
       opened={opened}
@@ -94,27 +140,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         direction="row"
         wrap="wrap"
       >
-        <Avatar
-          variant="filled"
-          radius="sm"
-          size="xl"
-          component="button"
-          onClick={() => setUserProps("parent")}
-        >
-          {getInitials(session?.user.name)}
-        </Avatar>
-        {data?.map((item) => (
-          <Avatar
-            key={item.id}
-            variant="filled"
-            radius="sm"
-            size="xl"
-            component="button"
-            onClick={() => setUserProps("student", item)}
-          >
-            {getInitials(item.name)}
-          </Avatar>
-        ))}
+        {status === "loading" || isLoadingStudents ? <Loading /> : <Profiles />}
       </Flex>
     </Modal>
   );

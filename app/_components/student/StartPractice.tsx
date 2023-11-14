@@ -105,7 +105,7 @@ export const StartPractice = () => {
           <IconHelpCircle />
         </ActionIcon>
       )}
-      <Stack align="center" justify="center" h={"100%"}>
+      <Stack align="center" justify="center" h={"100%"} w={"100%"} mt="-44px">
         {useMemo(
           () => (
             <Body />

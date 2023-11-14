@@ -40,7 +40,7 @@ const Student = () => {
           </Group>
           <Group justify="center" h={500}>
             <Paper w={"60%"} shadow="md" withBorder p="sm" h={"70%"}>
-              <Stack align="center" justify="center" h="100%">
+              <Stack align="center" justify="center" h="100%" gap={"0"}>
                 {useMemo(
                   () => (
                     <GetContent />

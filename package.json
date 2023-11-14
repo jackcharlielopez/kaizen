@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^1.0.3",
+    "@fireworks-js/react": "^2.10.7",
     "@mantine/carousel": "^7.1.2",
     "@mantine/core": "^7.1.2",
     "@mantine/dates": "^7.1.2",

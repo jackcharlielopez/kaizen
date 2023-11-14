@@ -15,7 +15,7 @@ export const IntroPractice = ({ name }: { name: string }) => {
       <Text size={"xl"}>
         Welcome back {name}. Lets get started on learning!
       </Text>
-      <Button autoFocus onClick={startAssessment}>
+      <Button autoFocus onClick={startAssessment} mt="lg">
         Start Assessment
       </Button>
     </>
