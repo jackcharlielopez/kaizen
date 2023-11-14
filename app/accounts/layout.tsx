@@ -2,7 +2,6 @@
 
 import {
   Avatar,
-  Box,
   Button,
   Flex,
   Group,
@@ -15,8 +14,6 @@ import { signOut, useSession } from "next-auth/react";
 import { trpc } from "../_trpc/client";
 import { useDisclosure } from "@mantine/hooks";
 import { createContext, useState } from "react";
-import { Student } from "@prisma/client";
-
 export interface userProps {
   role: string;
   name: string;

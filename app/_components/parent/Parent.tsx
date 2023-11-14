@@ -1,17 +1,47 @@
 import { AccountContext } from "@/app/accounts/layout";
-import { Container, Flex } from "@mantine/core";
+import { Flex, Tabs } from "@mantine/core";
 import { useContext } from "react";
 
 const Parent = () => {
-  let { id } = useContext(AccountContext);
+  let { id, students } = useContext(AccountContext);
+
+  console.log(students);
 
   return (
-    <Flex justify={"space-between"}>
-      <Container w={"35%"}>Account and Credit Card</Container>
+    <Flex justify={"center"} mt="xl">
+      <Tabs
+        bg={"white"}
+        variant="outline"
+        defaultValue={students[0].id}
+        w={"65%"}
+        p="sm"
+      >
+        <Tabs.List>
+          {students.map((student: { id: string; name: string }) => {
+            return (
+              <Tabs.Tab key={student.id} value={student.id}>
+                {student.name.split(" ")[0]}
+              </Tabs.Tab>
+            );
+          })}
+          <Tabs.Tab value="new student">+</Tabs.Tab>
 
-      <Container w={"65%"}>
-        Student tabs, student form, student progress
-      </Container>
+          <Tabs.Tab value="account" ml="auto">
+            Account
+          </Tabs.Tab>
+        </Tabs.List>
+
+        {students.map((student: { id: string; name: string }) => {
+          return (
+            <Tabs.Panel key={student.id} value={student.id}>
+              {student.name}
+            </Tabs.Panel>
+          );
+        })}
+
+        <Tabs.Panel value="new student">add new student</Tabs.Panel>
+        <Tabs.Panel value="account">account</Tabs.Panel>
+      </Tabs>
     </Flex>
   );
 };
