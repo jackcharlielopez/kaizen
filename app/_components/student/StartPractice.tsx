@@ -10,7 +10,7 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 
 export const StartPractice = () => {
-  const { state: reportState, dispatch: reportDispatch } =
+  const { state: report, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
 
   const {
@@ -19,30 +19,27 @@ export const StartPractice = () => {
   } = useContext<any>(PracticeSessionContext);
 
   const [counter, setCounter] = useState(
-    reportState.wrong.length + reportState.right.length
+    report.wrong.length + report.right.length
   );
 
   // handles user flow when user completes a set
   useEffect(() => {
-    if (reportState.learningSet.length) {
-      if (counter < reportState.currentSet.length) {
+    if (report.learningSet.length) {
+      if (counter < report.currentSet.length) {
         return;
       }
 
-      if (reportState.iterations === 2) {
+      if (report.iterations === 2) {
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
 
-      if (counter === reportState.currentSet.length && reportState.testing) {
+      if (counter === report.currentSet.length && report.testing) {
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
 
-      if (
-        counter === reportState.currentSet.length &&
-        reportState.wrong.length
-      ) {
+      if (counter === report.currentSet.length && report.wrong.length) {
         reportDispatch({ type: "iterate" });
         setCounter(0);
       } else {
@@ -56,8 +53,8 @@ export const StartPractice = () => {
 
   const getHelpMessage = () => {
     return previousStatus === UserActionsEnum.review
-      ? JSON.stringify(reportState.learningSet)
-      : JSON.stringify(reportState.currentSet[counter]);
+      ? JSON.stringify(report.learningSet)
+      : JSON.stringify(report.currentSet[counter]);
   };
 
   const Body = () => {
@@ -73,7 +70,7 @@ export const StartPractice = () => {
       default:
         return (
           <PracticeQuestion
-            qandA={reportState.currentSet[counter]}
+            qandA={report.currentSet[counter]}
             counter={counter}
             setCounter={setCounter}
           ></PracticeQuestion>

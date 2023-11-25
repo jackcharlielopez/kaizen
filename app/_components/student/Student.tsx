@@ -13,7 +13,7 @@ import { StudentReportProvider } from "@/app/_store/StudentReport.store";
 
 // TODO save when user is finished
 const Student = () => {
-  const { name } = useContext<any>(AccountContext);
+  const { name, id } = useContext<any>(AccountContext);
   const {
     state: { status },
   } = useContext<any>(StudentSessionContext);
@@ -23,7 +23,7 @@ const Student = () => {
       case StudentSessionStatusEnum.start:
         return StartPractice();
       case StudentSessionStatusEnum.finished:
-        return EndPractice();
+        return EndPractice(id);
       case StudentSessionStatusEnum.stop:
         return "Will take a quick break";
       case StudentSessionStatusEnum.default:

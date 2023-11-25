@@ -65,6 +65,34 @@ export const appRouter = router({
         throw new Error("Failed to convert text to speech");
       }
     }),
+  saveStudentReport: protectedProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        report: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.report.create({
+        data: {
+          studentId: input.studentId,
+          content: input.report,
+        },
+      });
+    }),
+  getStudentReports: protectedProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.report.findMany({
+        where: {
+          studentId: input.studentId,
+        },
+      });
+    }),
 });
 
 export type AppRouter = typeof appRouter;

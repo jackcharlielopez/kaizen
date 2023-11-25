@@ -32,6 +32,8 @@ export const PracticeQuestion = ({
   };
 
   const onKeyEnter = (e: { key: string }) => {
+    if (!answer().value) return;
+
     if (e.key === "Enter") {
       if (qandA.solution === Number(answer().value)) {
         reportDispatch({

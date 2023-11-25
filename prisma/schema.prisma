@@ -72,7 +72,6 @@ model Report {
   studentId String
   content   String
   createdAt DateTime @default(now())
-  completed Boolean
 
   student Student @relation(fields: [studentId], references: [id])
 }
