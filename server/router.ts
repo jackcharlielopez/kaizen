@@ -5,6 +5,7 @@ import openai from "@/lib/openai";
 import { GetHelpPrompt } from "@/lib/prompts";
 import fs from "fs";
 import path from "path";
+import { defaultSRSObj } from "@/@types/srs.model";
 
 export const appRouter = router({
   getStudents: protectedProcedure
@@ -105,7 +106,7 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return await prisma.report.findMany({
+      const res = await prisma.report.findFirst({
         where: {
           studentId: input.studentId,
         },
@@ -114,6 +115,8 @@ export const appRouter = router({
         },
         take: 1,
       });
+
+      return res ? JSON.parse(res.content) : defaultSRSObj;
     }),
 });
 

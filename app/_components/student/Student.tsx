@@ -1,5 +1,5 @@
-import { Group, Paper, Stack } from "@mantine/core";
-import { useContext, useMemo } from "react";
+import { Group, Paper, Stack, Text } from "@mantine/core";
+import { useContext, useEffect, useMemo } from "react";
 import { AccountContext } from "../../accounts/layout";
 import { Timer } from "./Timer";
 import { StudentSessionStatusEnum } from "@/@types/user-status.model";
@@ -10,18 +10,21 @@ import { IntroPractice } from "./IntroPractice";
 import { StudentSessionContext } from "@/app/_store/StudentSession.store";
 import { PracticeSessionProvider } from "@/app/_store/PracticeSession.store";
 import { StudentReportProvider } from "@/app/_store/StudentReport.store";
+import { trpc } from "@/app/_trpc/client";
 
-// TODO save when user is finished
 const Student = () => {
   const { name, id } = useContext<any>(AccountContext);
   const {
     state: { status },
   } = useContext<any>(StudentSessionContext);
+  const { data: initialState } = trpc.getLatestStudentReport.useQuery({
+    studentId: id,
+  });
 
   const GetContent = () => {
     switch (status) {
       case StudentSessionStatusEnum.start:
-        return StartPractice(id);
+        return StartPractice(id, initialState);
       case StudentSessionStatusEnum.finished:
         return EndPractice();
       case StudentSessionStatusEnum.stop:
@@ -45,7 +48,7 @@ const Student = () => {
                   () => (
                     <GetContent />
                   ),
-                  [status]
+                  [status, initialState]
                 )}
               </Stack>
             </Paper>

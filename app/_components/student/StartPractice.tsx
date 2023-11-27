@@ -9,8 +9,9 @@ import { PracticeHelp } from "./practice/PracticeHelp";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
+import { SRSModel } from "@/@types/srs.model";
 
-export const StartPractice = (studentId: string) => {
+export const StartPractice = (studentId: string, initialState: SRSModel) => {
   const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
 
   const { state: report, dispatch: reportDispatch } =
@@ -24,6 +25,10 @@ export const StartPractice = (studentId: string) => {
   const [counter, setCounter] = useState(
     report.wrong.length + report.right.length
   );
+
+  useEffect(() => {
+    reportDispatch({ type: "initialState", props: initialState });
+  }, [initialState]);
 
   // handles user flow when user completes a set
   useEffect(() => {
@@ -58,7 +63,7 @@ export const StartPractice = (studentId: string) => {
       practiceDispatch({ type: UserActionsEnum.test });
       return;
     }
-  }, [counter]);
+  }, [counter, report]);
 
   const getHelpMessage = () => {
     return previousStatus === UserActionsEnum.review
@@ -73,6 +78,7 @@ export const StartPractice = (studentId: string) => {
       case UserActionsEnum.test:
         return PracticeTest({
           setCounter,
+          studentId,
         });
       case UserActionsEnum.review:
         return PracticeReview();

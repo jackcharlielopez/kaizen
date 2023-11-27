@@ -9,6 +9,9 @@ export interface SRSModel {
   currentSet: subjectValues[];
 }
 
+export const maxPerSet = 2;
+export const maxPerLesson = 1;
+
 export type subjectValues = { problem: string; solution: number };
 
 export enum subjectEnum {
@@ -67,7 +70,6 @@ export const generateLearningSet = (
   lesson: number
 ): { problem: string; solution: number }[] => {
   const learningSet = [];
-  const maxPerSet = 9;
 
   for (let x = 1; x <= maxPerSet; x++) {
     const nextSet: subjectValues | undefined = set(lesson, x, operation);

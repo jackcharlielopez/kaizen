@@ -1,15 +1,26 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
-import { Group, Button, Text, Stack } from "@mantine/core";
+import { Group, Button, Text, Stack, Space } from "@mantine/core";
 import { useContext } from "react";
-import { findNextSubject } from "@/@types/srs.model";
+import {
+  defaultSRSObj,
+  findNextSubject,
+  maxPerLesson,
+} from "@/@types/srs.model";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
+import { trpc } from "@/app/_trpc/client";
 
-export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
-  const maxPerLesson = 9;
-
+export const PracticeTest = ({
+  setCounter,
+  studentId,
+}: {
+  setCounter: any;
+  studentId: string;
+}) => {
   const { state: reportState, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
+
+  const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
 
   const { dispatch: practiceDispatch } = useContext<any>(
     PracticeSessionContext
@@ -43,6 +54,16 @@ export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
     setCounter(0);
   };
 
+  const restartCourse = () => {
+    reportDispatch({
+      type: "initialState",
+      props: defaultSRSObj,
+    });
+    practiceDispatch({ type: UserActionsEnum.review });
+    setCounter(0);
+    saveReport({ studentId, report: JSON.stringify(defaultSRSObj) });
+  };
+
   const Next = () => {
     return (
       <Group justify="center">
@@ -59,19 +80,19 @@ export const PracticeTest = ({ setCounter }: { setCounter: any }) => {
             Next Subject ({findNextSubject(reportState.subject)})
           </Button>
         ) : (
-          <Text>Course Completed</Text>
+          <Stack>
+            <Text>Course Completed</Text>
+            <Button autoFocus onClick={restartCourse}>
+              Restart Course
+            </Button>
+          </Stack>
         )}
       </Group>
     );
   };
 
   if (!reportState.currentSet.length) {
-    return (
-      <>
-        <Text>No Data Found in Current Set</Text>
-        <Next />
-      </>
-    );
+    return <Next />;
   }
 
   if (reportState.testing) {

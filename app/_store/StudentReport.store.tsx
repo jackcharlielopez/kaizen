@@ -5,6 +5,7 @@ import {
   findNextSubject,
   shuffleArr,
   generateLearningSet,
+  maxPerLesson,
 } from "@/@types/srs.model";
 import { Dispatch, createContext, useReducer } from "react";
 
@@ -17,7 +18,7 @@ const initialState: SRSModel = defaultSRSObj;
 
 const StudentReportReducer = (
   state: SRSModel,
-  action: { type: string; props: subjectValues }
+  action: { type: string; props: any }
 ) => {
   switch (action.type) {
     case "nextSubject":
@@ -84,6 +85,52 @@ const StudentReportReducer = (
       return {
         ...state,
         right: [...state.right, action.props],
+      };
+    case "initialState":
+      let newLearningSet: subjectValues[];
+      let newLesson = action.props.lesson;
+      let newSubject = action.props.subject;
+
+      // if previous save wasnt a test then just return what is saved
+      if (!action.props.testing) {
+        return action.props;
+      } else {
+        // if user has gotten wrong answers repeat practice
+        if (action.props.wrong.length) {
+          newLearningSet = generateLearningSet(
+            action.props.subject,
+            action.props.lesson
+          );
+        } else {
+          // if no wrong answer get next lesson, ensure next lesson exists or move to next subject
+          if (action.props.lesson <= maxPerLesson) {
+            newLesson = action.props.lesson + 1;
+            newLearningSet = generateLearningSet(
+              action.props.subject,
+              newLesson
+            );
+          } else {
+            // check if there is a next subject, else return nothing
+            const subject = findNextSubject(action.props.subject);
+
+            if (subject) {
+              newSubject = subject;
+              newLearningSet = generateLearningSet(subject, 1);
+            } else {
+              newLearningSet = [];
+            }
+          }
+        }
+      }
+      return {
+        ...action.props,
+        right: [],
+        wrong: [],
+        testing: false,
+        lesson: newLesson,
+        subject: newSubject,
+        currentSet: newLearningSet,
+        learningSet: newLearningSet,
       };
     default:
       return throwErr();
