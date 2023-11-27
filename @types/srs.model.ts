@@ -9,8 +9,8 @@ export interface SRSModel {
   currentSet: subjectValues[];
 }
 
-export const maxPerSet = 2;
-export const maxPerLesson = 1;
+export const maxPerSet = 9;
+export const maxPerLesson = 9;
 
 export type subjectValues = { problem: string; solution: number };
 
