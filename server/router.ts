@@ -73,12 +73,17 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      return await prisma.report.create({
-        data: {
-          studentId: input.studentId,
-          content: input.report,
-        },
-      });
+      try {
+        await prisma.report.create({
+          data: {
+            studentId: input.studentId,
+            content: input.report,
+          },
+        });
+        return true;
+      } catch (err) {
+        throw new Error("Failed to save report");
+      }
     }),
   getStudentReports: protectedProcedure
     .input(
@@ -91,6 +96,23 @@ export const appRouter = router({
         where: {
           studentId: input.studentId,
         },
+      });
+    }),
+  getLatestStudentReport: protectedProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      return await prisma.report.findMany({
+        where: {
+          studentId: input.studentId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
       });
     }),
 });

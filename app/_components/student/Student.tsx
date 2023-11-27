@@ -21,9 +21,9 @@ const Student = () => {
   const GetContent = () => {
     switch (status) {
       case StudentSessionStatusEnum.start:
-        return StartPractice();
+        return StartPractice(id);
       case StudentSessionStatusEnum.finished:
-        return EndPractice(id);
+        return EndPractice();
       case StudentSessionStatusEnum.stop:
         return "Will take a quick break";
       case StudentSessionStatusEnum.default:

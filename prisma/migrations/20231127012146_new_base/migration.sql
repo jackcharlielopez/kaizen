@@ -1,43 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Membership` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Parent` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Report` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Student` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `invoice` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Parent" DROP CONSTRAINT "Parent_membershipId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Report" DROP CONSTRAINT "Report_studentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Student" DROP CONSTRAINT "Student_parentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "invoice" DROP CONSTRAINT "invoice_parentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "invoice" DROP CONSTRAINT "invoice_studentId_fkey";
-
--- DropTable
-DROP TABLE "Membership";
-
--- DropTable
-DROP TABLE "Parent";
-
--- DropTable
-DROP TABLE "Report";
-
--- DropTable
-DROP TABLE "Student";
-
--- DropTable
-DROP TABLE "invoice";
-
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
@@ -73,6 +33,7 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
+    "paidSubscription" BOOLEAN,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -82,6 +43,36 @@ CREATE TABLE "VerificationToken" (
     "identifier" TEXT NOT NULL,
     "token" TEXT NOT NULL,
     "expires" TIMESTAMP(3) NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Student" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "birthDate" DATE NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT NOT NULL,
+
+    CONSTRAINT "Student_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Report" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Report_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "invoice" (
+    "studentId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "cost" INTEGER NOT NULL,
+
+    CONSTRAINT "invoice_pkey" PRIMARY KEY ("userId","studentId")
 );
 
 -- CreateIndex
@@ -104,3 +95,15 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Student" ADD CONSTRAINT "Student_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Report" ADD CONSTRAINT "Report_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invoice" ADD CONSTRAINT "invoice_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invoice" ADD CONSTRAINT "invoice_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

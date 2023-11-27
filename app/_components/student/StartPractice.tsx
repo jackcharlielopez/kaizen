@@ -8,8 +8,11 @@ import { PracticeReview } from "./practice/PracticeReview";
 import { PracticeHelp } from "./practice/PracticeHelp";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
+import { trpc } from "@/app/_trpc/client";
 
-export const StartPractice = () => {
+export const StartPractice = (studentId: string) => {
+  const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
+
   const { state: report, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
 
@@ -24,21 +27,27 @@ export const StartPractice = () => {
 
   // handles user flow when user completes a set
   useEffect(() => {
+    // ensure there is a learning set, otherwise test them
     if (report.learningSet.length) {
+      // do nothing if user is just moving through set
       if (counter < report.currentSet.length) {
         return;
       }
 
+      // quiz user if they've gone through set 3 times
       if (report.iterations === 2) {
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
 
+      // show user results and save user report
       if (counter === report.currentSet.length && report.testing) {
+        saveReport({ studentId, report: JSON.stringify(report) });
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
 
+      // iterate again if user didnt answer all questions in practice set, otherwise test them
       if (counter === report.currentSet.length && report.wrong.length) {
         reportDispatch({ type: "iterate" });
         setCounter(0);
