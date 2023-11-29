@@ -5,7 +5,7 @@ import openai from "@/lib/openai";
 import { GetHelpPrompt } from "@/lib/prompts";
 import fs from "fs";
 import path from "path";
-import { defaultSRSObj } from "@/@types/srs.model";
+import { SRSModel, defaultSRSObj } from "@/@types/srs.model";
 
 export const appRouter = router({
   getStudents: protectedProcedure
@@ -93,11 +93,47 @@ export const appRouter = router({
       })
     )
     .query(async ({ input }) => {
-      return await prisma.report.findMany({
+      const data = await prisma.report.findMany({
         where: {
           studentId: input.studentId,
         },
       });
+
+      const calculateValue = (obj: SRSModel) => {
+        const { right, wrong } = obj;
+        const total = right.length + wrong.length;
+        const correct = right.length;
+        const incorrect = wrong.length;
+        return { total, correct, incorrect };
+      };
+
+      const groupReportsByDate = data.reduce((acc, obj) => {
+        const parsedContent = JSON.parse(obj.content);
+        const { subject, lesson } = parsedContent;
+        const value = calculateValue(parsedContent);
+
+        const date = obj.createdAt.toISOString().split("T")[0];
+
+        if (!acc[date]) {
+          acc[date] = {};
+        }
+
+        if (!acc[date][subject]) {
+          acc[date][subject] = {};
+        }
+
+        if (!acc[date][subject][lesson]) {
+          acc[date][subject][lesson] = [];
+        }
+
+        acc[date][subject][lesson].push({
+          value,
+        });
+
+        return acc;
+      }, {});
+
+      return groupReportsByDate;
     }),
   getLatestStudentReport: protectedProcedure
     .input(
