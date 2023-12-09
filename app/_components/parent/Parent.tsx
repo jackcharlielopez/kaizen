@@ -20,7 +20,7 @@ const Parent = () => {
       <Tabs
         bg={"white"}
         variant="outline"
-        defaultValue={students ? students[0].id : "new student"}
+        defaultValue={students?.length ? students[0].id : "new student"}
         w={"65%"}
         p="sm"
       >

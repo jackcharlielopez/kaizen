@@ -1,4 +1,4 @@
-import { ActionIcon, Stack } from "@mantine/core";
+import { ActionIcon, Group, Paper, Stack, Stepper } from "@mantine/core";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { PracticeQuestion } from "./practice/PracticeQuestion";
@@ -10,12 +10,15 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
 import { SRSModel } from "@/@types/srs.model";
+import { Timer } from "./Timer";
 
 export const StartPractice = (studentId: string, initialState: SRSModel) => {
   const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
 
   const { state: report, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
+
+  const [startTime, setStartTime] = useState(Date.now());
 
   const {
     state: { status, previousStatus },
@@ -47,7 +50,12 @@ export const StartPractice = (studentId: string, initialState: SRSModel) => {
 
       // show user results and save user report
       if (counter === report.currentSet.length && report.testing) {
-        saveReport({ studentId, report: JSON.stringify(report) });
+        let elapsedTime = Math.round((Date.now() - startTime) / 1000);
+        saveReport({
+          studentId,
+          report: JSON.stringify(report),
+          elapsedTime,
+        });
         practiceDispatch({ type: UserActionsEnum.test });
         return;
       }
@@ -64,6 +72,10 @@ export const StartPractice = (studentId: string, initialState: SRSModel) => {
       return;
     }
   }, [counter, report]);
+
+  useEffect(() => {
+    if (status === UserActionsEnum.test) setStartTime(Date.now());
+  }, [status]);
 
   const getHelpMessage = () => {
     return previousStatus === UserActionsEnum.review
@@ -102,29 +114,57 @@ export const StartPractice = (studentId: string, initialState: SRSModel) => {
   };
 
   return (
-    <>
-      {status === UserActionsEnum.help ? (
-        <ActionIcon
-          autoFocus
-          style={{ alignSelf: "end" }}
-          size="xl"
-          onClick={goBack}
-        >
-          <IconArrowBackUp />
-        </ActionIcon>
-      ) : (
-        <ActionIcon style={{ alignSelf: "end" }} size="xl" onClick={getHelp}>
-          <IconHelpCircle />
-        </ActionIcon>
-      )}
-      <Stack align="center" justify="center" h={"100%"} w={"100%"} mt="-44px">
-        {useMemo(
-          () => (
-            <Body />
-          ),
-          [status, counter]
-        )}
-      </Stack>
-    </>
+    <Stack justify="flex-start" gap={0}>
+      <Group justify="flex-end">
+        <Timer lengthOfTime={300}></Timer>
+      </Group>
+
+      <Group justify="center">
+        <Stepper active={status} allowNextStepsSelect={false}>
+          <Stepper.Step label="Review" />
+          <Stepper.Step label="Practice" />
+          <Stepper.Step label="Test" />
+        </Stepper>
+      </Group>
+
+      <Group justify="center" h={500}>
+        <Paper w={"60%"} shadow="md" withBorder p="sm" h={"70%"}>
+          <Stack align="center" justify="center" h="100%" gap={"0"}>
+            {status === UserActionsEnum.help ? (
+              <ActionIcon
+                autoFocus
+                style={{ alignSelf: "end" }}
+                size="xl"
+                onClick={goBack}
+              >
+                <IconArrowBackUp />
+              </ActionIcon>
+            ) : (
+              <ActionIcon
+                style={{ alignSelf: "end" }}
+                size="xl"
+                onClick={getHelp}
+              >
+                <IconHelpCircle />
+              </ActionIcon>
+            )}
+            <Stack
+              align="center"
+              justify="center"
+              h={"100%"}
+              w={"100%"}
+              mt="-44px"
+            >
+              {useMemo(
+                () => (
+                  <Body />
+                ),
+                [status, counter]
+              )}
+            </Stack>
+          </Stack>
+        </Paper>
+      </Group>
+    </Stack>
   );
 };

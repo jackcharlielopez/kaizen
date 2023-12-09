@@ -24,11 +24,6 @@ const StudentSessionReducer = (
         ...state,
         status: StudentSessionStatusEnum.start,
       };
-    case StudentSessionStatusEnum.stop:
-      return {
-        ...state,
-        status: StudentSessionStatusEnum.stop,
-      };
     case StudentSessionStatusEnum.finished:
       return {
         ...state,

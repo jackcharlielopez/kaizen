@@ -68,10 +68,11 @@ model Student {
 }
 
 model Report {
-  id        String   @id @default(uuid())
-  studentId String
-  content   String
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  studentId   String
+  content     String
+  createdAt   DateTime @default(now())
+  elapsedTime Int
 
   student Student @relation(fields: [studentId], references: [id])
 }

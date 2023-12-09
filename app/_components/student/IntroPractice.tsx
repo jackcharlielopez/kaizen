@@ -12,11 +12,9 @@ export const IntroPractice = ({ name }: { name: string }) => {
 
   return (
     <>
-      <Text size={"xl"}>
-        Welcome back {name}. Lets get started on learning!
-      </Text>
+      <Text size={"xl"}>Welcome {name}</Text>
       <Button autoFocus onClick={startAssessment} mt="lg">
-        Start Assessment
+        Enter
       </Button>
     </>
   );

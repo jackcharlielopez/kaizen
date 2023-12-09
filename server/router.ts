@@ -71,18 +71,22 @@ export const appRouter = router({
       z.object({
         studentId: z.string(),
         report: z.string(),
+        elapsedTime: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
+      console.log(input);
       try {
         await prisma.report.create({
           data: {
             studentId: input.studentId,
             content: input.report,
+            elapsedTime: input.elapsedTime || 0,
           },
         });
         return true;
       } catch (err) {
+        console.log(err);
         throw new Error("Failed to save report");
       }
     }),

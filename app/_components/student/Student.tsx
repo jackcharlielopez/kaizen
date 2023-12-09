@@ -1,5 +1,5 @@
 import { Group, Paper, Stack, Text } from "@mantine/core";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { AccountContext } from "../../accounts/layout";
 import { Timer } from "./Timer";
 import { StudentSessionStatusEnum } from "@/@types/user-status.model";
@@ -27,8 +27,6 @@ const Student = () => {
         return StartPractice(id, initialState);
       case StudentSessionStatusEnum.finished:
         return EndPractice();
-      case StudentSessionStatusEnum.stop:
-        return "Will take a quick break";
       case StudentSessionStatusEnum.default:
         return <IntroPractice name={name.split(" ")[0]} />;
     }
@@ -37,23 +35,12 @@ const Student = () => {
   return (
     <StudentReportProvider>
       <PracticeSessionProvider>
-        <Stack justify="flex-start" gap={0}>
-          <Group justify="flex-end">
-            <Timer lengthOfTime={1200}></Timer>
-          </Group>
-          <Group justify="center" h={500}>
-            <Paper w={"60%"} shadow="md" withBorder p="sm" h={"70%"}>
-              <Stack align="center" justify="center" h="100%" gap={"0"}>
-                {useMemo(
-                  () => (
-                    <GetContent />
-                  ),
-                  [status, initialState]
-                )}
-              </Stack>
-            </Paper>
-          </Group>
-        </Stack>
+        {useMemo(
+          () => (
+            <GetContent />
+          ),
+          [status, initialState]
+        )}
       </PracticeSessionProvider>
     </StudentReportProvider>
   );
