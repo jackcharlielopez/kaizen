@@ -1,11 +1,11 @@
 import { ActionIcon, Group, Paper, Stack, Stepper } from "@mantine/core";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
-import { PracticeQuestion } from "./practice/PracticeQuestion";
+import { PracticeQuestion } from "./components/PracticeQuestion";
 import { IconArrowBackUp, IconHelpCircle } from "@tabler/icons-react";
-import { PracticeTest } from "./practice/PracticeTest";
-import { PracticeReview } from "./practice/PracticeReview";
-import { PracticeHelp } from "./practice/PracticeHelp";
+import { PracticeTest } from "./components/PracticeTest";
+import { PracticeReview } from "./components/PracticeReview";
+import { PracticeHelp } from "./components/PracticeHelp";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";

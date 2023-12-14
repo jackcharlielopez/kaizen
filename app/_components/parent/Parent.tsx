@@ -1,26 +1,32 @@
 import { trpc } from "@/app/_trpc/client";
 import { AccountContext } from "@/app/accounts/layout";
 import { Flex, Tabs, Text } from "@mantine/core";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
+import ReportGraph from "./components/ReportGraph";
 
 const Parent = () => {
   let { id, students } = useContext(AccountContext);
+  const [activeTab, setActiveTab] = useState<string | null>(
+    students?.length ? students[0].id : "new student"
+  );
 
-  const GetStudentData = (studentId: string) => {
-    const { data: studentData } = trpc.getStudentReports.useQuery({
-      studentId,
-    });
+  const { mutate: getStudentReports, data: studentData } =
+    trpc.getStudentReports.useMutation();
 
-    console.log(studentData);
-    return JSON.stringify(studentData);
-  };
+  useEffect(() => {
+    if (!activeTab || activeTab === "new student" || activeTab === "account")
+      return;
+
+    getStudentReports({ studentId: activeTab });
+  }, [activeTab]);
 
   return (
     <Flex justify={"center"} mt="xl">
       <Tabs
         bg={"white"}
         variant="outline"
-        defaultValue={students?.length ? students[0].id : "new student"}
+        value={activeTab}
+        onChange={setActiveTab}
         w={"65%"}
         p="sm"
       >
@@ -42,7 +48,7 @@ const Parent = () => {
         {students?.map((student: { id: string; name: string }) => {
           return (
             <Tabs.Panel key={student.id} value={student.id} p="sm">
-              {GetStudentData(student.id)}
+              {studentData && <ReportGraph reports={studentData}></ReportGraph>}
             </Tabs.Panel>
           );
         })}

@@ -75,7 +75,6 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      console.log(input);
       try {
         await prisma.report.create({
           data: {
@@ -86,7 +85,6 @@ export const appRouter = router({
         });
         return true;
       } catch (err) {
-        console.log(err);
         throw new Error("Failed to save report");
       }
     }),
@@ -96,48 +94,43 @@ export const appRouter = router({
         studentId: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       const data = await prisma.report.findMany({
         where: {
           studentId: input.studentId,
         },
       });
 
-      const calculateValue = (obj: SRSModel) => {
+      const calculateValue = (obj: SRSModel, time: number, date: Date) => {
         const { right, wrong } = obj;
         const total = right.length + wrong.length;
         const correct = right.length;
         const incorrect = wrong.length;
-        return { total, correct, incorrect };
+        return { total, correct, incorrect, time, date };
       };
 
-      const groupReportsByDate = data.reduce((acc, obj) => {
+      const groupReportsBySubject = data.reduce((acc, obj) => {
         const parsedContent = JSON.parse(obj.content);
         const { subject, lesson } = parsedContent;
-        const value = calculateValue(parsedContent);
+        const value = calculateValue(
+          parsedContent,
+          obj.elapsedTime,
+          obj.createdAt
+        );
 
-        const date = obj.createdAt.toISOString().split("T")[0];
-
-        if (!acc[date]) {
-          acc[date] = {};
+        if (!acc[subject]) {
+          acc[subject] = {};
         }
 
-        if (!acc[date][subject]) {
-          acc[date][subject] = {};
+        if (!acc[subject][lesson]) {
+          acc[subject][lesson] = [];
         }
 
-        if (!acc[date][subject][lesson]) {
-          acc[date][subject][lesson] = [];
-        }
-
-        acc[date][subject][lesson].push({
-          value,
-        });
+        acc[subject][lesson].push(value);
 
         return acc;
       }, {});
-
-      return groupReportsByDate;
+      return groupReportsBySubject;
     }),
   getLatestStudentReport: protectedProcedure
     .input(
