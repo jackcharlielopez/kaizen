@@ -10,7 +10,7 @@ export interface SRSModel {
 }
 
 export const maxPerSet = 9;
-export const maxPerLesson = 9;
+export const maxPerLesson = 3;
 
 export type subjectValues = { problem: string; solution: number };
 

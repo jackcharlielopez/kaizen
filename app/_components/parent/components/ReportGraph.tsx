@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
-import { maxPerLesson, maxPerSet } from "@/@types/srs.model";
+import { maxPerLesson, maxPerSet, subjectEnum } from "@/@types/srs.model";
 
 ChartJS.register(
   LinearScale,
@@ -27,68 +27,118 @@ ChartJS.register(
   BarController
 );
 
-const data = {
+const data1 = {
   labels: [],
   datasets: [],
 };
 
-const ReportGraph = ({ reports }: { reports: any }) => {
-  const datasets: any = [];
+const data2 = {
+  labels: [],
+  datasets: [],
+};
 
-  Object.keys(reports).forEach((subject: any, index: number) => {
-    const dataPoints: any = [];
+const legend = {
+  display: true,
+  position: "top",
+  labels: {
+    generateLabels: () => {
+      return Object.keys(subjectEnum).map((subject, index) => {
+        return {
+          text:
+            subject.charAt(0).toUpperCase() + subject.substr(1).toLowerCase(),
+          fillStyle: colors[index],
+          hidden: false,
+          lineCap: "butt",
+          strokeStyle: colors[index],
+          lineWidth: 1,
+        };
+      });
+    },
+  },
+};
+
+const tooltip = {
+  enabled: true,
+  intersect: false,
+  callbacks: {
+    title: (context: { raw: { title: any } }[]) => {
+      return context[0].raw.title;
+    },
+    label: (context: { raw: { label: any } }) => {
+      return context.raw.label;
+    },
+  },
+};
+
+const colors = ["#3498db", "#9b59b6", "#2ecc71", "#e67e22"];
+
+const ReportGraph = ({ reports }: { reports: any }) => {
+  const datasets1: any = [];
+  const datasets2: any = [];
+
+  Object.values(subjectEnum).forEach((subject: any, i: number) => {
     const dataBars: any = [];
+    const dataPoints: any = [];
+
+    if (!reports[subject]) return;
+
     const lessons = Object.keys(reports[subject]);
 
     lessons.map((lesson) => {
-      reports[subject][lesson].map((attempt: any) => {
-        dataPoints.push({
-          x: lesson,
-          y: attempt.time,
-          Tooltip: `Score: ${attempt.correct}/${
-            attempt.correct + attempt.incorrect
-          } Date: ${new Date(attempt.date)}`,
-        });
-        dataBars.push({
-          x: lesson,
-          y: attempt.correct,
-          Tooltip: `Score: ${attempt.correct}/${
-            attempt.correct + attempt.incorrect
-          } Date: ${new Date(attempt.date)}`,
-        });
-      });
+      const attemptLength = reports[subject][lesson].length;
+      let attemptsCombinedScore = 0;
+      let attemptsCombinedTime = 0;
+      reports[subject][lesson].map(
+        (attempt: { correct: number; time: number }, index: number) => {
+          attemptsCombinedScore += attempt.correct;
+          attemptsCombinedTime += attempt.time;
+
+          if (index + 1 < attemptLength) return;
+
+          dataBars.push({
+            x: lesson,
+            y: attemptLength,
+            title: `Total Attempts for ${subject}${lesson}: ${attemptLength}`,
+            label: `Average Score: ${Math.round(
+              attemptsCombinedScore / attemptLength
+            )}`,
+          });
+
+          dataPoints.push({
+            x: lesson,
+            y: Math.round(attemptsCombinedTime / attemptLength),
+            title: `Average Time per Lesson: ${Math.round(
+              attemptsCombinedTime / attemptLength
+            )}`,
+          });
+        }
+      );
     });
 
-    datasets.push(
-      {
-        type: "line" as const,
-        label: `Time to Complete`,
-        data: dataPoints,
-        fill: false,
-        borderColor: "rgba(0, 128, 255, 1)",
-        backgroundColor: "rgba(0, 128, 255, 1)",
-        borderWidth: 2,
-        pointBackgroundColor: "rgba(0, 128, 255, 1)",
-        yAxisID: "y",
-      },
-      {
-        type: "bar" as const,
-        label: `Results`,
-        data: dataBars,
-        fill: false,
-        backgroundColor: "rgba(0, 128, 0, 0.6)",
-        borderColor: "rgba(0, 128, 0, 1)",
-        yAxisID: "y2",
-      }
-    );
+    datasets1.push({
+      type: "bar" as const,
+      data: dataBars,
+      fill: false,
+      backgroundColor: colors[i] + 75,
+      borderColor: colors[i],
+    });
+
+    datasets2.push({
+      type: "line" as const,
+      data: dataPoints,
+      fill: false,
+      backgroundColor: colors[i] + 75,
+      borderColor: colors[i],
+    });
   });
 
-  data.datasets = datasets;
+  data1.datasets = datasets1;
+  data2.datasets = datasets2;
 
-  const options = {
-    type: "line",
+  const options1 = {
+    type: "bar",
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
     scales: {
       x: {
         position: "bottom",
@@ -99,35 +149,53 @@ const ReportGraph = ({ reports }: { reports: any }) => {
       },
       y: {
         ticks: {
-          stepSize: 5,
-        },
-        grid: {
-          display: false,
+          stepSize: 1,
         },
         beginAtZero: true,
         position: "left",
         title: {
           display: true,
-          text: "Time (seconds)",
-        },
-      },
-      y2: {
-        ticks: {
-          stepSize: 1,
-        },
-        max: maxPerSet + 1,
-        beginAtZero: true,
-        position: "right",
-        title: {
-          display: true,
-          text: "Answered Correctly",
+          text: "Quiz Attempts",
         },
       },
     },
     plugins: {
-      legend: {
+      legend,
+      tooltip,
+      title: {
         display: true,
+        text: "Students progress through each subject and lesson",
       },
+    },
+  };
+
+  const options2 = {
+    type: "line",
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+      x: {
+        position: "bottom",
+        title: {
+          display: true,
+          text: "Lesson",
+        },
+      },
+      y: {
+        ticks: {
+          stepSize: 1,
+        },
+        beginAtZero: true,
+        position: "left",
+        title: {
+          display: true,
+          text: "Average Time to Pass",
+        },
+      },
+    },
+    plugins: {
+      legend,
+      tooltip,
       title: {
         display: true,
         text: "Students progress through each subject and lesson",
@@ -137,7 +205,8 @@ const ReportGraph = ({ reports }: { reports: any }) => {
 
   return (
     <div>
-      <Chart type="bar" data={data} options={options} />
+      <Chart type="bar" data={data1} options={options1} />
+      <Chart type="line" data={data2} options={options2} />
     </div>
   );
 };
