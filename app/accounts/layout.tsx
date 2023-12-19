@@ -52,7 +52,7 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (props && status === "authenticated" && !opened) {
     return (
-      <Stack h={"100vh"} bg={"blue"} gap={0}>
+      <Stack mih={"100vh"} bg={"blue"} gap={0}>
         <Group justify="space-between" p={8} bg={"white"}>
           <Image
             src="/logo.svg"
