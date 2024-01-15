@@ -13,7 +13,7 @@ import {
 } from "chart.js";
 import { Chart } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
-import { maxPerLesson, maxPerSet, subjectEnum } from "@/@types/srs.model";
+import { subjectEnum } from "@/@types/srs.model";
 
 ChartJS.register(
   LinearScale,
@@ -84,7 +84,7 @@ const ReportGraph = ({ reports }: { reports: any }) => {
 
     const lessons = Object.keys(reports[subject]);
 
-    lessons.map((lesson) => {
+    lessons.forEach((lesson) => {
       const attemptLength = reports[subject][lesson].length;
       let attemptsCombinedScore = 0;
       let attemptsCombinedTime = 0;

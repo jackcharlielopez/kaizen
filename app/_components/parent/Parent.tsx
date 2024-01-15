@@ -1,8 +1,9 @@
 import { trpc } from "@/app/_trpc/client";
 import { AccountContext } from "@/app/accounts/layout";
-import { Flex, Tabs, Text } from "@mantine/core";
+import { Flex, Tabs } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import ReportGraph from "./components/ReportGraph";
+import AddStudentForm from "./components/AddStudentForm";
 
 const Parent = () => {
   let { id, students } = useContext(AccountContext);
@@ -54,7 +55,7 @@ const Parent = () => {
         })}
 
         <Tabs.Panel value="new student" p="sm">
-          add new student
+          <AddStudentForm/>
         </Tabs.Panel>
         <Tabs.Panel value="account" p="sm">
           account

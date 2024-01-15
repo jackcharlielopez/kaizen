@@ -8,6 +8,31 @@ import path from "path";
 import { SRSModel, defaultSRSObj } from "@/@types/srs.model";
 
 export const appRouter = router({
+  addStudent: protectedProcedure
+  .input(
+    z.object({
+      name: z.string(),
+      birthDate: z.string(),
+    })
+  )
+  .output(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        birthDate: z.date(),
+        createdAt: z.date(),
+        userId: z.string(),
+      })
+  )
+  .mutation(async ({ ctx, input }) => {
+    return await prisma.student.create({
+      data: {
+        name: input.name,
+        birthDate: new Date(input.birthDate),
+        userId: ctx.session?.user.id,
+      },
+    });
+  }),
   getStudents: protectedProcedure
     .output(
       z.array(
