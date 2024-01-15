@@ -7,15 +7,32 @@ import fs from "fs";
 import path from "path";
 import { SRSModel, defaultSRSObj } from "@/@types/srs.model";
 
+const toTitleCase = (text: string) => {
+  return text.replace(
+    /\w\S*/g,
+    (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  );
+};
+
 export const appRouter = router({
   addStudent: protectedProcedure
-  .input(
-    z.object({
-      name: z.string(),
-      birthDate: z.string(),
-    })
-  )
-  .output(
+    .input(
+      z.object({
+        "Full Name": z
+          .string()
+          .refine(
+            (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value),
+            "Name should contain only alphabets"
+          )
+          .refine(
+            (value) => /^[a-zA-Z]+\s+[a-zA-Z]+$/.test(value),
+            "Please enter both firstname and lastname"
+          ),
+        "Birth Date": z.string(),
+        userId: z.string(),
+      })
+    )
+    .output(
       z.object({
         id: z.string(),
         name: z.string(),
@@ -23,16 +40,16 @@ export const appRouter = router({
         createdAt: z.date(),
         userId: z.string(),
       })
-  )
-  .mutation(async ({ ctx, input }) => {
-    return await prisma.student.create({
-      data: {
-        name: input.name,
-        birthDate: new Date(input.birthDate),
-        userId: ctx.session?.user.id,
-      },
-    });
-  }),
+    )
+    .mutation(async ({ input }) => {
+      return await prisma.student.create({
+        data: {
+          name: toTitleCase(input["Full Name"]),
+          birthDate: new Date(input["Birth Date"]),
+          userId: input.userId,
+        },
+      });
+    }),
   getStudents: protectedProcedure
     .output(
       z.array(

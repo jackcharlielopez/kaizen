@@ -5,6 +5,8 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import Session_Provider from "./_components/Session_Provider";
 import TrpcProvider from "./_trpc/TrpcProvider";
+import { Notifications } from "@mantine/notifications";
+import "@mantine/notifications/styles.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +29,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <Session_Provider>
           <TrpcProvider>
-            <MantineProvider>{children}</MantineProvider>
+            <MantineProvider>
+              <Notifications position="top-right" limit={5} />
+              {children}
+            </MantineProvider>
           </TrpcProvider>
         </Session_Provider>
       </body>

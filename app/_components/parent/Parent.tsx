@@ -6,7 +6,10 @@ import ReportGraph from "./components/ReportGraph";
 import AddStudentForm from "./components/AddStudentForm";
 
 const Parent = () => {
-  let { id, students } = useContext(AccountContext);
+  let { id } = useContext(AccountContext);
+
+  const { data: students } = trpc.getStudents.useQuery();
+
   const [activeTab, setActiveTab] = useState<string | null>(
     students?.length ? students[0].id : "new student"
   );
@@ -55,7 +58,7 @@ const Parent = () => {
         })}
 
         <Tabs.Panel value="new student" p="sm">
-          <AddStudentForm/>
+          <AddStudentForm userId={id} />
         </Tabs.Panel>
         <Tabs.Panel value="account" p="sm">
           account

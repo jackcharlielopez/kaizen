@@ -18,7 +18,6 @@ export interface userProps {
   role: string;
   name: string;
   id: string;
-  students?: any[];
 }
 
 const getInitials = (name: string) => {
@@ -43,7 +42,6 @@ const AccountLayout = ({ children }: { children: React.ReactNode }) => {
         role: "parent",
         name: session?.user.name,
         id: session?.user.id,
-        students: data || [],
       });
     }
 
