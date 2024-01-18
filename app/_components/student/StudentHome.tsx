@@ -3,7 +3,7 @@ import { StudentSessionContext } from "@/app/_store/StudentSession.store";
 import { Button, Text } from "@mantine/core";
 import { useContext } from "react";
 
-export const IntroPractice = ({ name }: { name: string }) => {
+export const StudentHome = ({ name }: { name: string }) => {
   const { dispatch } = useContext<any>(StudentSessionContext);
 
   const startAssessment = () => {

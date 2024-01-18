@@ -2,7 +2,7 @@ import { trpc } from "@/app/_trpc/client";
 import { Center, Skeleton, Text } from "@mantine/core";
 import { useEffect } from "react";
 
-export const PracticeHelp = (content: string) => {
+export const Help = (content: string) => {
   const {
     mutate: getHelp,
     data: getHelpRes,

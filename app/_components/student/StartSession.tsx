@@ -1,18 +1,18 @@
 import { ActionIcon, Group, Paper, Stack, Stepper } from "@mantine/core";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
-import { PracticeQuestion } from "./components/PracticeQuestion";
 import { IconArrowBackUp, IconHelpCircle } from "@tabler/icons-react";
-import { PracticeTest } from "./components/PracticeTest";
-import { PracticeReview } from "./components/PracticeReview";
-import { PracticeHelp } from "./components/PracticeHelp";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
 import { SRSModel } from "@/@types/srs.model";
 import { Timer } from "./Timer";
+import { Help } from "./session/Help";
+import { Quiz } from "./session/Quiz";
+import { Review } from "./session/Review";
+import { Question } from "./session/Question";
 
-export const StartPractice = (studentId: string, initialState: SRSModel) => {
+export const StartSession = (studentId: string, initialState: SRSModel) => {
   const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
 
   const { state: report, dispatch: reportDispatch } =
@@ -86,21 +86,21 @@ export const StartPractice = (studentId: string, initialState: SRSModel) => {
   const Body = () => {
     switch (status) {
       case UserActionsEnum.help:
-        return PracticeHelp(getHelpMessage());
+        return Help(getHelpMessage());
       case UserActionsEnum.test:
-        return PracticeTest({
+        return Quiz({
           setCounter,
           studentId,
         });
       case UserActionsEnum.review:
-        return PracticeReview();
+        return Review();
       default:
         return (
-          <PracticeQuestion
+          <Question
             qandA={report.currentSet[counter]}
             counter={counter}
             setCounter={setCounter}
-          ></PracticeQuestion>
+          />
         );
     }
   };

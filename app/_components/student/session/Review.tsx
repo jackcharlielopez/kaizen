@@ -5,7 +5,7 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { Center, Grid, Button, Text } from "@mantine/core";
 import { useContext } from "react";
 
-export const PracticeReview = () => {
+export const Review = () => {
   const { state: reportState, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
 

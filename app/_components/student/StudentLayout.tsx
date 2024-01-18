@@ -4,15 +4,15 @@ import { AccountContext } from "../../accounts/layout";
 import { Timer } from "./Timer";
 import { StudentSessionStatusEnum } from "@/@types/user-status.model";
 import React from "react";
-import { StartPractice } from "./StartPractice";
-import { EndPractice } from "./EndPractice";
-import { IntroPractice } from "./IntroPractice";
 import { StudentSessionContext } from "@/app/_store/StudentSession.store";
 import { PracticeSessionProvider } from "@/app/_store/PracticeSession.store";
 import { StudentReportProvider } from "@/app/_store/StudentReport.store";
 import { trpc } from "@/app/_trpc/client";
+import { StartSession } from "./StartSession";
+import { FinishedSession } from "./FinishedSession";
+import { StudentHome } from "./StudentHome";
 
-const Student = () => {
+export const StudentLayout = () => {
   const { name, id } = useContext<any>(AccountContext);
   const {
     state: { status },
@@ -24,11 +24,11 @@ const Student = () => {
   const GetContent = () => {
     switch (status) {
       case StudentSessionStatusEnum.start:
-        return StartPractice(id, initialState);
+        return StartSession(id, initialState);
       case StudentSessionStatusEnum.finished:
-        return EndPractice();
+        return FinishedSession();
       case StudentSessionStatusEnum.default:
-        return <IntroPractice name={name.split(" ")[0]} />;
+        return <StudentHome name={name.split(" ")[0]} />;
     }
   };
 
@@ -45,5 +45,3 @@ const Student = () => {
     </StudentReportProvider>
   );
 };
-
-export default Student;

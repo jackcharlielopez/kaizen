@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { useFocusTrap } from "@mantine/hooks";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 
-export const PracticeQuestion = ({
+export const Question = ({
   qandA,
   counter,
   setCounter,

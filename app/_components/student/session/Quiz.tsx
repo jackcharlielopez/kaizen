@@ -10,7 +10,7 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
 
-export const PracticeTest = ({
+export const Quiz = ({
   setCounter,
   studentId,
 }: {
