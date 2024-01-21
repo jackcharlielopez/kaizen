@@ -14,6 +14,7 @@ import {
 import { Chart } from "react-chartjs-2";
 import "chartjs-adapter-date-fns";
 import { subjectEnum } from "@/@types/srs.model";
+import { Group } from "@mantine/core";
 
 ChartJS.register(
   LinearScale,
@@ -204,10 +205,10 @@ const ReportGraph = ({ reports }: { reports: any }) => {
   };
 
   return (
-    <div>
+    <Group>
       <Chart type="bar" data={data1} options={options1} />
       <Chart type="line" data={data2} options={options2} />
-    </div>
+    </Group>
   );
 };
 

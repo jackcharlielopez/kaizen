@@ -1,12 +1,15 @@
 import { trpc } from "@/app/_trpc/client";
 import { AccountContext } from "@/app/accounts/layout";
-import { Flex, Tabs } from "@mantine/core";
+import { Flex, Tabs, Button } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import ReportGraph from "./components/ReportGraph";
 import AddStudentForm from "./components/AddStudentForm";
+import { useQueryClient } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
 
 const Parent = () => {
   let { id } = useContext(AccountContext);
+  const queryClient = useQueryClient();
 
   const { data: students } = trpc.getStudents.useQuery();
 
@@ -16,6 +19,24 @@ const Parent = () => {
 
   const { mutate: getStudentReports, data: studentData } =
     trpc.getStudentReports.useMutation();
+
+  const { mutate: deleteStudentAccount } = trpc.deleteStudent.useMutation({
+    onSuccess: (val) => {
+      queryClient.invalidateQueries({
+        queryKey: [["getStudents"], { type: "query" }],
+      });
+      notifications.show({
+        title: "Student Deleted Successfully",
+        message: `${val.name} is now deleted`,
+        color: "green",
+      });
+      setActiveTab("new student");
+    },
+  });
+
+  function deleteStudent(studentId: string) {
+    deleteStudentAccount({ studentId });
+  }
 
   useEffect(() => {
     if (!activeTab || activeTab === "new student" || activeTab === "account")
@@ -52,6 +73,12 @@ const Parent = () => {
         {students?.map((student: { id: string; name: string }) => {
           return (
             <Tabs.Panel key={student.id} value={student.id} p="sm">
+              <Button
+                variant="filled"
+                onClick={() => deleteStudent(student.id)}
+              >
+                Delete Account
+              </Button>
               {studentData && <ReportGraph reports={studentData}></ReportGraph>}
             </Tabs.Panel>
           );

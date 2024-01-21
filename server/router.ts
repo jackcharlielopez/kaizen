@@ -14,20 +14,47 @@ const toTitleCase = (text: string) => {
   );
 };
 
+const deleteReports = (studentId: string) =>
+  prisma.report.deleteMany({
+    where: {
+      studentId,
+    },
+  });
+
+const deleteStudent = (id: string) =>
+  prisma.student.delete({
+    where: {
+      id,
+    },
+  });
+
+const deleteInvoices = (studentId: string) =>
+  prisma.invoice.deleteMany({
+    where: {
+      studentId,
+    },
+  });
+
 export const appRouter = router({
+  deleteStudent: protectedProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const deleteAll = await prisma.$transaction([
+        deleteInvoices(input.studentId),
+        deleteReports(input.studentId),
+        deleteStudent(input.studentId),
+      ]);
+
+      return deleteAll[2];
+    }),
   addStudent: protectedProcedure
     .input(
       z.object({
-        "Full Name": z
-          .string()
-          .refine(
-            (value) => /^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value),
-            "Name should contain only alphabets"
-          )
-          .refine(
-            (value) => /^[a-zA-Z]+\s+[a-zA-Z]+$/.test(value),
-            "Please enter both firstname and lastname"
-          ),
+        "Full Name": z.string(),
         "Birth Date": z.string(),
         userId: z.string(),
       })

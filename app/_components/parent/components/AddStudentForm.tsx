@@ -14,23 +14,22 @@ const AddStudentForm = (props: { userId: string }) => {
   };
 
   const { mutate: addStudent } = trpc.addStudent.useMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getStudents"] });
+    onSuccess: (val) => {
+      queryClient.invalidateQueries({
+        queryKey: [["getStudents"], { type: "query" }],
+      });
+      notifications.show({
+        title: "Student Added Successfully",
+        message: `${val.name} is now added`,
+        color: "green",
+      });
     },
     onError: (err) => {
-      if (err.data?.zodError) {
-        notifications.show({
-          title: err.data?.zodError.title,
-          message: err.data?.zodError.message,
-          color: "red",
-        });
-      } else {
-        notifications.show({
-          title: err.data?.path,
-          message: err.message,
-          color: "red",
-        });
-      }
+      notifications.show({
+        title: err.data?.path,
+        message: err.message,
+        color: "red",
+      });
     },
     onSettled: () => {
       studentForm.reset();
@@ -40,6 +39,18 @@ const AddStudentForm = (props: { userId: string }) => {
 
   const studentForm = useForm({
     initialValues,
+    validateInputOnBlur: true,
+    validate: {
+      "Full Name": (value) =>
+        value === ""
+          ? "Name is required"
+          : !/^[a-zA-Z]+[-'s]?[a-zA-Z ]+$/.test(value)
+          ? "Name should contain only alphabets"
+          : !/^[a-zA-Z]+\s+[a-zA-Z]+$/.test(value)
+          ? "Please enter both firstname and lastname"
+          : null,
+      "Birth Date": (value) => (value === "" ? "Birth Date is required" : null),
+    },
   });
 
   return (
