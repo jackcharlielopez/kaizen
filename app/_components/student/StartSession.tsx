@@ -11,6 +11,7 @@ import { Help } from "./session/Help";
 import { Quiz } from "./session/Quiz";
 import { Review } from "./session/Review";
 import { Question } from "./session/Question";
+import { Practice } from "./session/Practice";
 
 export const StartSession = (studentId: string, initialState: SRSModel) => {
   const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
@@ -95,13 +96,7 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
       case UserActionsEnum.review:
         return Review();
       default:
-        return (
-          <Question
-            qandA={report.currentSet[counter]}
-            counter={counter}
-            setCounter={setCounter}
-          />
-        );
+        return Practice();
     }
   };
 
