@@ -66,7 +66,7 @@ const StudentReportReducer = (
         wrong: [],
         iterations: 0,
         testing: false,
-        currentSet: state.wrong.length ? state.wrong : state.learningSet,
+        currentSet: state.learningSet,
       };
     case "iterate":
       const iterations = state.iterations + 1;
@@ -75,6 +75,7 @@ const StudentReportReducer = (
         right: [],
         wrong: [],
         iterations,
+        currentSet: state.wrong,
       };
     case "wrong":
       return {

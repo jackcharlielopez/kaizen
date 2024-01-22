@@ -1,7 +1,7 @@
 import { subjectValues } from "@/@types/srs.model";
-import { Group, Text, Input, Center, Button } from "@mantine/core";
+import { Group, Text, Center, Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useFocusTrap } from "@mantine/hooks";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
@@ -24,22 +24,13 @@ export const Question = ({
   const focusTrapRef = useFocusTrap();
 
   // Form for the input field
-  const form = useForm({
-    initialValues: {
-      answer: "",
-    },
-  });
-
-  // short hand to get answer from form
-  const answer = () => {
-    return form.getInputProps("answer");
-  };
+  const [value, setValue] = useState("");
 
   const onKeyEnter = (e: { key: string }) => {
-    if (!answer().value) return;
+    if (!value) return;
 
     if (e.key === "Enter") {
-      if (qandA.solution === Number(answer().value)) {
+      if (qandA.solution === Number(value)) {
         reportDispatch({
           type: "right",
           props: qandA,
@@ -51,7 +42,7 @@ export const Question = ({
         });
       }
       setCounter(counter + 1);
-      form.reset();
+      setValue("");
     }
   };
 
@@ -90,12 +81,14 @@ export const Question = ({
       <Center>
         <Group>
           <Text size="120px">{qandA.problem} = </Text>
-          <Input
+          <TextInput
+            id="answer"
             ref={focusTrapRef}
             w={200}
             size="120px"
             type="number"
-            {...form.getInputProps("answer")}
+            value={value}
+            onChange={(event) => setValue(event.currentTarget.value)}
             onKeyDown={onKeyEnter}
           />
         </Group>

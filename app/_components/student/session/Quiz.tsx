@@ -1,6 +1,6 @@
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { Group, Button, Text, Stack, Space } from "@mantine/core";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   defaultSRSObj,
   findNextSubject,
@@ -9,14 +9,9 @@ import {
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
+import { Question } from "./Question";
 
-export const Quiz = ({
-  setCounter,
-  studentId,
-}: {
-  setCounter: any;
-  studentId: string;
-}) => {
+export const Quiz = ({ studentId }: { studentId: string }) => {
   const { state: reportState, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
 
@@ -26,16 +21,12 @@ export const Quiz = ({
     PracticeSessionContext
   );
 
-  const startQuiz = () => {
-    reportDispatch({ type: "quiz" });
-    practiceDispatch({ type: UserActionsEnum.practice });
-    setCounter(0);
-  };
+  const [counter, setCounter] = useState(0);
+
+  const [startTime] = useState(Date.now());
 
   const keepPracticing = () => {
     reportDispatch({ type: "practice" });
-    practiceDispatch({ type: UserActionsEnum.practice });
-    setCounter(0);
   };
 
   const nextLesson = () => {
@@ -43,7 +34,6 @@ export const Quiz = ({
       type: "nextLesson",
     });
     practiceDispatch({ type: UserActionsEnum.review });
-    setCounter(0);
   };
 
   const nextSubject = () => {
@@ -51,7 +41,6 @@ export const Quiz = ({
       type: "nextSubject",
     });
     practiceDispatch({ type: UserActionsEnum.review });
-    setCounter(0);
   };
 
   const restartCourse = () => {
@@ -60,16 +49,28 @@ export const Quiz = ({
       props: defaultSRSObj,
     });
     practiceDispatch({ type: UserActionsEnum.review });
-    setCounter(0);
     saveReport({ studentId, report: JSON.stringify(defaultSRSObj) });
   };
 
+  useEffect(() => {
+    // show user results and save user report
+    if (counter === reportState.learningSet.length) {
+      let elapsedTime = Math.round((Date.now() - startTime) / 1000);
+      saveReport({
+        studentId,
+        report: JSON.stringify(reportState),
+        elapsedTime,
+      });
+    }
+  }, [counter]);
+
   const Next = () => {
+    console.log("hits next incorrectly");
     return (
       <Group justify="center">
         {reportState.wrong.length ? (
           <Button autoFocus onClick={keepPracticing}>
-            Keep Practicing
+            Restart Practice
           </Button>
         ) : reportState.lesson <= maxPerLesson ? (
           <Button autoFocus onClick={nextLesson}>
@@ -91,11 +92,11 @@ export const Quiz = ({
     );
   };
 
-  if (!reportState.currentSet.length) {
-    return <Next />;
-  }
+  // catch the situation where the set is empty
+  if (!reportState.currentSet.length) return <Next />;
 
-  if (reportState.testing) {
+  if (counter === reportState.learningSet.length) {
+    console.log(reportState);
     return (
       <Stack align="center">
         <Text>
@@ -106,28 +107,13 @@ export const Quiz = ({
       </Stack>
     );
   } else {
+    console.log(reportState);
     return (
-      <Stack align="center">
-        {reportState.wrong.length ? (
-          <Text>
-            We've done a lot of practicing, I think you are ready for the quiz.
-            If not lets practice some more.
-          </Text>
-        ) : (
-          <Text>
-            You've successfully ran through all the practice problems. Lets take
-            the quiz.
-          </Text>
-        )}
-        <Group justify="center" mt="lg">
-          <Button autoFocus onClick={startQuiz}>
-            Start Quiz
-          </Button>
-          {reportState.wrong.length && (
-            <Button onClick={keepPracticing}>Keep Practicing</Button>
-          )}
-        </Group>
-      </Stack>
+      <Question
+        qandA={reportState.learningSet[counter]}
+        counter={counter}
+        setCounter={setCounter}
+      />
     );
   }
 };

@@ -1,87 +1,31 @@
 import { ActionIcon, Group, Paper, Stack, Stepper } from "@mantine/core";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { IconArrowBackUp, IconHelpCircle } from "@tabler/icons-react";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
-import { trpc } from "@/app/_trpc/client";
 import { SRSModel } from "@/@types/srs.model";
 import { Timer } from "./Timer";
 import { Help } from "./session/Help";
 import { Quiz } from "./session/Quiz";
 import { Review } from "./session/Review";
-import { Question } from "./session/Question";
 import { Practice } from "./session/Practice";
 
 export const StartSession = (studentId: string, initialState: SRSModel) => {
-  const { mutate: saveReport } = trpc.saveStudentReport.useMutation();
-
   const { state: report, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
-
-  const [startTime, setStartTime] = useState(Date.now());
 
   const {
     state: { status, previousStatus },
     dispatch: practiceDispatch,
   } = useContext<any>(PracticeSessionContext);
 
-  const [counter, setCounter] = useState(
-    report.wrong.length + report.right.length
-  );
-
   useEffect(() => {
     reportDispatch({ type: "initialState", props: initialState });
   }, [initialState]);
 
-  // handles user flow when user completes a set
-  useEffect(() => {
-    // ensure there is a learning set, otherwise test them
-    if (report.learningSet.length) {
-      // do nothing if user is just moving through set
-      if (counter < report.currentSet.length) {
-        return;
-      }
-
-      // quiz user if they've gone through set 3 times
-      if (report.iterations === 2) {
-        practiceDispatch({ type: UserActionsEnum.test });
-        return;
-      }
-
-      // show user results and save user report
-      if (counter === report.currentSet.length && report.testing) {
-        let elapsedTime = Math.round((Date.now() - startTime) / 1000);
-        saveReport({
-          studentId,
-          report: JSON.stringify(report),
-          elapsedTime,
-        });
-        practiceDispatch({ type: UserActionsEnum.test });
-        return;
-      }
-
-      // iterate again if user didnt answer all questions in practice set, otherwise test them
-      if (counter === report.currentSet.length && report.wrong.length) {
-        reportDispatch({ type: "iterate" });
-        setCounter(0);
-      } else {
-        practiceDispatch({ type: UserActionsEnum.test });
-      }
-    } else {
-      practiceDispatch({ type: UserActionsEnum.test });
-      return;
-    }
-  }, [counter, report]);
-
-  useEffect(() => {
-    if (status === UserActionsEnum.test) setStartTime(Date.now());
-  }, [status]);
-
   const getHelpMessage = () => {
-    return previousStatus === UserActionsEnum.review
-      ? JSON.stringify(report.learningSet)
-      : JSON.stringify(report.currentSet[counter]);
+    return JSON.stringify(report.learningSet);
   };
 
   const Body = () => {
@@ -89,10 +33,7 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
       case UserActionsEnum.help:
         return Help(getHelpMessage());
       case UserActionsEnum.test:
-        return Quiz({
-          setCounter,
-          studentId,
-        });
+        return Quiz({ studentId });
       case UserActionsEnum.review:
         return Review();
       default:
@@ -135,13 +76,15 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
                 <IconArrowBackUp />
               </ActionIcon>
             ) : (
-              <ActionIcon
-                style={{ alignSelf: "end" }}
-                size="xl"
-                onClick={getHelp}
-              >
-                <IconHelpCircle />
-              </ActionIcon>
+              status === UserActionsEnum.practice && (
+                <ActionIcon
+                  style={{ alignSelf: "end" }}
+                  size="xl"
+                  onClick={getHelp}
+                >
+                  <IconHelpCircle />
+                </ActionIcon>
+              )
             )}
             <Stack
               align="center"
@@ -154,7 +97,7 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
                 () => (
                   <Body />
                 ),
-                [status, counter]
+                [status]
               )}
             </Stack>
           </Stack>
