@@ -76,7 +76,7 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
                 <IconArrowBackUp />
               </ActionIcon>
             ) : (
-              status === UserActionsEnum.practice && (
+              status !== UserActionsEnum.test && (
                 <ActionIcon
                   style={{ alignSelf: "end" }}
                   size="xl"

@@ -27,6 +27,7 @@ export const Quiz = ({ studentId }: { studentId: string }) => {
 
   const keepPracticing = () => {
     reportDispatch({ type: "practice" });
+    practiceDispatch({ type: UserActionsEnum.practice });
   };
 
   const nextLesson = () => {
@@ -65,7 +66,6 @@ export const Quiz = ({ studentId }: { studentId: string }) => {
   }, [counter]);
 
   const Next = () => {
-    console.log("hits next incorrectly");
     return (
       <Group justify="center">
         {reportState.wrong.length ? (
@@ -96,7 +96,6 @@ export const Quiz = ({ studentId }: { studentId: string }) => {
   if (!reportState.currentSet.length) return <Next />;
 
   if (counter === reportState.learningSet.length) {
-    console.log(reportState);
     return (
       <Stack align="center">
         <Text>
@@ -107,7 +106,6 @@ export const Quiz = ({ studentId }: { studentId: string }) => {
       </Stack>
     );
   } else {
-    console.log(reportState);
     return (
       <Question
         qandA={reportState.learningSet[counter]}

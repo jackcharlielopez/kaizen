@@ -26,10 +26,12 @@ export const Question = ({
   // Form for the input field
   const [value, setValue] = useState("");
 
-  const onKeyEnter = (e: { key: string }) => {
+  const onKeyEnter = (e: any) => {
     if (!value) return;
 
     if (e.key === "Enter") {
+      e.stopPropagation();
+      e.preventDefault();
       if (qandA.solution === Number(value)) {
         reportDispatch({
           type: "right",
