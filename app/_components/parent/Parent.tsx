@@ -1,6 +1,6 @@
 import { trpc } from "@/app/_trpc/client";
 import { AccountContext } from "@/app/accounts/layout";
-import { Flex, Tabs, Button } from "@mantine/core";
+import { Flex, Tabs, Button, Group } from "@mantine/core";
 import { useContext, useEffect, useState } from "react";
 import ReportGraph from "./components/ReportGraph";
 import AddStudentForm from "./components/AddStudentForm";
@@ -73,12 +73,14 @@ const Parent = () => {
         {students?.map((student: { id: string; name: string }) => {
           return (
             <Tabs.Panel key={student.id} value={student.id} p="sm">
-              <Button
-                variant="filled"
-                onClick={() => deleteStudent(student.id)}
-              >
-                Delete Account
-              </Button>
+              <Group justify="flex-end" mb="md">
+                <Button
+                  variant="outline"
+                  onClick={() => deleteStudent(student.id)}
+                >
+                  Delete Account
+                </Button>
+              </Group>
               {studentData && <ReportGraph reports={studentData}></ReportGraph>}
             </Tabs.Panel>
           );

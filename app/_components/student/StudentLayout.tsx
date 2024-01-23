@@ -28,7 +28,13 @@ export const StudentLayout = () => {
       case StudentSessionStatusEnum.finished:
         return FinishedSession();
       case StudentSessionStatusEnum.default:
-        return <StudentHome name={name.split(" ")[0]} />;
+        return (
+          <StudentHome
+            name={name.split(" ")[0]}
+            id={id}
+            initialState={initialState}
+          />
+        );
     }
   };
 
