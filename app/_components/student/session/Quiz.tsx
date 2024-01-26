@@ -10,8 +10,10 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { trpc } from "@/app/_trpc/client";
 import { Question } from "./Question";
+import { AccountContext } from "@/app/accounts/layout";
 
-export const Quiz = ({ studentId }: { studentId: string }) => {
+export const Quiz = () => {
+  const { id: studentId } = useContext<any>(AccountContext);
   const { state: reportState, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
 

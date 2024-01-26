@@ -1,11 +1,4 @@
-import {
-  ActionIcon,
-  Button,
-  Center,
-  RingProgress,
-  Text,
-  rem,
-} from "@mantine/core";
+import { ActionIcon, Center, RingProgress, Text, rem } from "@mantine/core";
 import { IconPlayerPause } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import {

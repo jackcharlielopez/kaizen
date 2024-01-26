@@ -123,6 +123,7 @@ const StudentReportReducer = (
           }
         }
       }
+
       return {
         ...action.props,
         right: [],

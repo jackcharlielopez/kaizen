@@ -1,28 +1,22 @@
 import { ActionIcon, Group, Paper, Stack, Stepper } from "@mantine/core";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { UserActionsEnum } from "@/@types/user-status.model";
 import { IconArrowBackUp, IconHelpCircle } from "@tabler/icons-react";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
-import { SRSModel } from "@/@types/srs.model";
 import { Timer } from "./Timer";
 import { Help } from "./session/Help";
 import { Quiz } from "./session/Quiz";
 import { Review } from "./session/Review";
 import { Practice } from "./session/Practice";
 
-export const StartSession = (studentId: string, initialState: SRSModel) => {
-  const { state: report, dispatch: reportDispatch } =
-    useContext<any>(StudentReportContext);
+export const StartSession = () => {
+  const { state: report } = useContext<any>(StudentReportContext);
 
   const {
     state: { status, previousStatus },
     dispatch: practiceDispatch,
   } = useContext<any>(PracticeSessionContext);
-
-  useEffect(() => {
-    reportDispatch({ type: "initialState", props: initialState });
-  }, [initialState]);
 
   const getHelpMessage = () => {
     return JSON.stringify(report.learningSet);
@@ -33,7 +27,7 @@ export const StartSession = (studentId: string, initialState: SRSModel) => {
       case UserActionsEnum.help:
         return Help(getHelpMessage());
       case UserActionsEnum.test:
-        return Quiz({ studentId });
+        return Quiz();
       case UserActionsEnum.review:
         return Review();
       default:
