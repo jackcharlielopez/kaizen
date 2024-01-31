@@ -21,10 +21,10 @@ const PracticeSessionReducer = (
   action: { type: UserActionsEnum }
 ) => {
   switch (action.type) {
-    case UserActionsEnum.test:
+    case UserActionsEnum.quiz:
       return {
         ...state,
-        status: UserActionsEnum.test,
+        status: UserActionsEnum.quiz,
         previousStatus: state.status,
       };
     case UserActionsEnum.practice:

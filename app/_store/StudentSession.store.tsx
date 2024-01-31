@@ -11,7 +11,7 @@ interface StudentSessionState {
 }
 
 const initialState: StudentSessionState = {
-  status: StudentSessionStatusEnum.default,
+  status: StudentSessionStatusEnum.loading,
 };
 
 const StudentSessionReducer = (
@@ -28,6 +28,11 @@ const StudentSessionReducer = (
       return {
         ...state,
         status: StudentSessionStatusEnum.finished,
+      };
+    case StudentSessionStatusEnum.loading:
+      return {
+        ...state,
+        status: StudentSessionStatusEnum.loading,
       };
     default:
       return {

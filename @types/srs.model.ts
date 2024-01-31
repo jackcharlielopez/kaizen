@@ -1,16 +1,19 @@
+import { UserActionsEnum } from "./user-status.model";
+
 export interface SRSModel {
   subject: subjectEnum;
   right: subjectValues[];
   wrong: subjectValues[];
   iterations: number;
   lesson: number;
-  testing: boolean;
+  userActionsState: UserActionsEnum;
   learningSet: subjectValues[];
   currentSet: subjectValues[];
 }
 
 export const maxPerSet = 9;
-export const maxPerLesson = 3;
+export const maxPerLesson = 4;
+export const midLesson = Math.round(maxPerLesson / 2);
 
 export type subjectValues = { problem: string; solution: number };
 
@@ -89,7 +92,7 @@ export const defaultSRSObj: SRSModel = {
   wrong: [],
   iterations: 0,
   lesson,
-  testing: false,
+  userActionsState: UserActionsEnum.review,
   learningSet: currentSet,
   currentSet,
 };

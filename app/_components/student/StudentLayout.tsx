@@ -8,9 +8,17 @@ import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { trpc } from "@/app/_trpc/client";
 import { AccountContext } from "@/app/accounts/layout";
 import { SRSModel } from "@/@types/srs.model";
+import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 export const StudentLayout = () => {
   const { id } = useContext<any>(AccountContext);
   const { dispatch: reportDispatch } = useContext<any>(StudentReportContext);
+  const { dispatch: practiceDispatch } = useContext<any>(
+    PracticeSessionContext
+  );
+  const { dispatch: studentSessionDispatch } = useContext<any>(
+    StudentSessionContext
+  );
+
   const {
     state: { status },
   } = useContext<any>(StudentSessionContext);
@@ -22,6 +30,8 @@ export const StudentLayout = () => {
     {
       onSuccess(data: SRSModel) {
         reportDispatch({ type: "initialState", props: data });
+        practiceDispatch({ type: data.userActionsState });
+        studentSessionDispatch({ type: StudentSessionStatusEnum.start });
       },
     }
   );
@@ -34,6 +44,8 @@ export const StudentLayout = () => {
         return FinishedSession();
       case StudentSessionStatusEnum.default:
         return StudentHome();
+      default:
+        return "Loading...";
     }
   };
 

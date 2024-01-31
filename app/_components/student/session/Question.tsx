@@ -1,11 +1,12 @@
 import { subjectValues } from "@/@types/srs.model";
 import { Group, Text, Center, Button, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useFocusTrap } from "@mantine/hooks";
 import { StudentReportContext } from "@/app/_store/StudentReport.store";
 import { PracticeSessionContext } from "@/app/_store/PracticeSession.store";
 import { UserActionsEnum } from "@/@types/user-status.model";
+import { trpc } from "@/app/_trpc/client";
+import { AccountContext } from "@/app/accounts/layout";
 
 export const Question = ({
   qandA,
@@ -16,7 +17,7 @@ export const Question = ({
   counter: number;
   setCounter: any;
 }) => {
-  const { state: report, dispatch: reportDispatch } =
+  const { state: reportState, dispatch: reportDispatch } =
     useContext<any>(StudentReportContext);
   const { state: status } = useContext<any>(PracticeSessionContext);
 
@@ -67,9 +68,10 @@ export const Question = ({
             Prev
           </Button>
           <Button
+            autoFocus
             variant="filled"
             onClick={() => setCounter(counter + 1)}
-            disabled={counter === report.learningSet.length - 1}
+            disabled={counter === reportState.learningSet.length - 1}
           >
             Next
           </Button>

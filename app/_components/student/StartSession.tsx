@@ -26,7 +26,7 @@ export const StartSession = () => {
     switch (status) {
       case UserActionsEnum.help:
         return Help(getHelpMessage());
-      case UserActionsEnum.test:
+      case UserActionsEnum.quiz:
         return Quiz();
       case UserActionsEnum.review:
         return Review();
@@ -53,7 +53,7 @@ export const StartSession = () => {
         <Stepper active={status} allowNextStepsSelect={false}>
           <Stepper.Step label="Review" />
           <Stepper.Step label="Practice" />
-          <Stepper.Step label="Test" />
+          <Stepper.Step label="Quiz" />
         </Stepper>
       </Group>
 
@@ -70,7 +70,8 @@ export const StartSession = () => {
                 <IconArrowBackUp />
               </ActionIcon>
             ) : (
-              status !== UserActionsEnum.test && (
+              status === UserActionsEnum.practice ||
+              (status === UserActionsEnum.review && (
                 <ActionIcon
                   style={{ alignSelf: "end" }}
                   size="xl"
@@ -78,7 +79,7 @@ export const StartSession = () => {
                 >
                   <IconHelpCircle />
                 </ActionIcon>
-              )
+              ))
             )}
             <Stack
               align="center"

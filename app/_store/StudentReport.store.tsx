@@ -6,7 +6,9 @@ import {
   shuffleArr,
   generateLearningSet,
   maxPerLesson,
+  midLesson,
 } from "@/@types/srs.model";
+import { UserActionsEnum } from "@/@types/user-status.model";
 import { Dispatch, createContext, useReducer } from "react";
 
 interface StudentReportContext {
@@ -34,7 +36,7 @@ const StudentReportReducer = (
         lesson: 1,
         learningSet: nextlearningSet,
         currentSet: nextlearningSet,
-        testing: false,
+        userActionsState: UserActionsEnum.practice,
       };
     case "nextLesson":
       const lesson = state.lesson + 1;
@@ -46,7 +48,7 @@ const StudentReportReducer = (
         wrong: [],
         iterations: 0,
         lesson,
-        testing: false,
+        userActionsState: UserActionsEnum.practice,
         learningSet,
         currentSet: learningSet,
       };
@@ -56,8 +58,42 @@ const StudentReportReducer = (
         right: [],
         wrong: [],
         iterations: 0,
-        testing: true,
+        userActionsState: UserActionsEnum.quiz,
         currentSet: shuffleArr(state.learningSet),
+      };
+    case "midExam":
+      const generatedMidSet = [];
+
+      for (let x = 1; x <= midLesson; x++) {
+        generatedMidSet.push(...generateLearningSet(state.subject, x));
+      }
+
+      return {
+        ...state,
+        right: [],
+        wrong: [],
+        iterations: 0,
+        lesson: midLesson + 0.5,
+        userActionsState: UserActionsEnum.practice,
+        learningSet: generatedMidSet,
+        currentSet: shuffleArr(generatedMidSet),
+      };
+    case "finalExam":
+      const generatedFinalSet = [];
+
+      for (let x = 1; x <= maxPerLesson; x++) {
+        generatedFinalSet.push(...generateLearningSet(state.subject, x));
+      }
+
+      return {
+        ...state,
+        right: [],
+        wrong: [],
+        iterations: 0,
+        lesson: maxPerLesson + 0.5,
+        userActionsState: UserActionsEnum.practice,
+        learningSet: generatedFinalSet,
+        currentSet: shuffleArr(generatedFinalSet),
       };
     case "practice":
       return {
@@ -65,7 +101,7 @@ const StudentReportReducer = (
         right: [],
         wrong: [],
         iterations: 0,
-        testing: false,
+        userActionsState: UserActionsEnum.practice,
         currentSet: state.learningSet,
       };
     case "iterate":
@@ -91,25 +127,43 @@ const StudentReportReducer = (
       let newLearningSet: subjectValues[];
       let newLesson = action.props.lesson;
       let newSubject = action.props.subject;
-
       // if previous save wasnt a test then just return what is saved
-      if (!action.props.testing) {
+      if (action.props.userActionsState !== UserActionsEnum.quiz) {
         return action.props;
       } else {
-        // if user has gotten wrong answers repeat practice
+        // if user has gotten wrong answers repeat session
         if (action.props.wrong.length) {
-          newLearningSet = generateLearningSet(
-            action.props.subject,
-            action.props.lesson
-          );
+          newLearningSet = action.props.learningSet;
         } else {
           // if no wrong answer get next lesson, ensure next lesson exists or move to next subject
-          if (action.props.lesson <= maxPerLesson) {
-            newLesson = action.props.lesson + 1;
-            newLearningSet = generateLearningSet(
-              action.props.subject,
-              newLesson
-            );
+          if (action.props.lesson < maxPerLesson) {
+            // check if mid exam is next
+            if (action.props.lesson === midLesson) {
+              const generatedMidSet = [];
+
+              for (let x = 1; x <= midLesson; x++) {
+                generatedMidSet.push(...generateLearningSet(state.subject, x));
+              }
+
+              newLearningSet = generatedMidSet;
+            }
+            // return next lesson
+            else {
+              newLesson = action.props.lesson + 1;
+              newLearningSet = generateLearningSet(
+                action.props.subject,
+                newLesson
+              );
+            }
+          } // check if final exam is next
+          else if (action.props.lesson === maxPerLesson) {
+            const generatedFinalSet = [];
+
+            for (let x = 1; x <= maxPerLesson; x++) {
+              generatedFinalSet.push(...generateLearningSet(state.subject, x));
+            }
+
+            newLearningSet = generatedFinalSet;
           } else {
             // check if there is a next subject, else return nothing
             const subject = findNextSubject(action.props.subject);
@@ -128,7 +182,7 @@ const StudentReportReducer = (
         ...action.props,
         right: [],
         wrong: [],
-        testing: false,
+        userActionsState: UserActionsEnum.practice,
         lesson: newLesson,
         subject: newSubject,
         currentSet: newLearningSet,

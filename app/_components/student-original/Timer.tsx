@@ -1,4 +1,11 @@
-import { ActionIcon, Center, RingProgress, Text, rem } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Center,
+  RingProgress,
+  Text,
+  rem,
+} from "@mantine/core";
 import { IconPlayerPause } from "@tabler/icons-react";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -67,7 +74,7 @@ export const Timer = ({ lengthOfTime }: { lengthOfTime: number }) => {
         sections={[{ value: 100, color: "red" }]}
         label={
           <Text c="red" fw={700} ta="center" size="xl">
-            Time&apos;s Up!
+            Time's Up!
           </Text>
         }
       />

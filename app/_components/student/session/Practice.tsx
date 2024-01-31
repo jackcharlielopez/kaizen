@@ -21,7 +21,7 @@ export const Practice = () => {
 
   const startQuiz = () => {
     reportDispatch({ type: "quiz" });
-    practiceDispatch({ type: UserActionsEnum.test });
+    practiceDispatch({ type: UserActionsEnum.quiz });
   };
 
   const keepPracticing = () => {
@@ -45,13 +45,13 @@ export const Practice = () => {
       <Stack align="center">
         {report.wrong.length ? (
           <Text>
-            We've done a lot of practicing, I think you are ready for the quiz.
-            If not lets practice some more.
+            We&apos;ve done a lot of practicing, I think you are ready for the
+            quiz. If not lets practice some more.
           </Text>
         ) : (
           <Text>
-            You've successfully ran through all the practice problems. Lets take
-            the quiz.
+            You&apos;ve successfully ran through all the practice problems. Lets
+            take the quiz.
           </Text>
         )}
         <Group justify="center" mt="lg">
